@@ -1,0 +1,19 @@
+{
+  "name": "hammer_collections_project01",
+  "version": "1.0.0",
+  "description": "ecommmerce website for selling action figuures",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "dev": "nodemon index.js",
+    "test": "NODE_ENV=test mocha"
+  },
+  "author": "rithintom",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.1",
+    "nocache": "^4.0.0"
+  }
+}
