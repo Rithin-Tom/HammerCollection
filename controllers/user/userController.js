@@ -34,6 +34,16 @@ const loadSignUPpage =async (req,res) => {
     
 }
 
+const loadErrorpage = async (req,res) => {
+    try {
+        res.render("error")
+    } catch (error) {
+        console.log("error in loading ERROR page",error.message)
+        res.satuts(500).send("server error")
+    }
+    
+}
+
 
 
 
@@ -42,5 +52,6 @@ const loadSignUPpage =async (req,res) => {
 module.exports={
     loadHomepage,
     loadLoginpage,
-    loadSignUPpage
+    loadSignUPpage,
+    loadErrorpage 
 }

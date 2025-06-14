@@ -7,6 +7,7 @@ const userController = require("../controllers/user/userController")
 router.get("/",userController.loadHomepage)
 router.get("/login",userController.loadLoginpage)
 router.get("/signup",userController.loadSignUPpage)
+router.get("/error",userController.loadErrorpage)
 
 
 

@@ -1,0 +1,386 @@
+/* hearo session css */
+
+
+
+/* Hero slider section background */
+/* Background image */
+/* Hero slider section background */
+/* ===== Hero Section Background ===== */
+.hero-slider-section {
+  background-image: url('https://i.pinimg.com/736x/64/6a/6c/646a6c7aee26e6645c53b4b249e5bf4d.jpg'); /* Change this */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ===== Product Card Styling ===== */
+.product-card {
+  background-color: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Center (larger) card */
+.center-card {
+  width: 200px;
+  height: 340px;
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+/* Side (smaller) cards */
+.side-card {
+  width: 200px;
+  height: 280px;
+  opacity: 0.95;
+  margin-top: 20px;
+}
+
+/* Carousel Controls (arrows) */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  padding: 20px;
+}
+
+/* Indicators (dots) */
+.carousel-indicators [data-bs-target] {
+  background-color: white;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+
+
+/* marvell section of  the landing page  */
+
+/* 🎯 Marvel Section Background */
+.marvel-section {
+  background-image: url('https://i.pinimg.com/736x/09/50/73/0950733b751e79eb30dd56f8e640df78.jpg'); /* 🔁 Change background here */
+ background-size: 100% 100%; /* 🔄 Force landscape */
+  background-position: center;
+  background-repeat: no-repeat;
+  color: black;
+}
+
+/* 🎯 Marvel Image (left side) */
+/* 🎯 Marvel Figures Image */
+.marvel-figures {
+  border-radius: 20px;
+
+  /* 🔧 Control size */
+  max-height: 580px;
+  width: auto;
+  object-fit: cover;
+
+  /* 🔧 Control positioning */
+  margin-left: 10px;   /* push image to right inside its col */
+  margin-right: 100px;  /* center image horizontally */
+  display: block;
+
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* 🎯 Marvel Logo */
+.marvel-logo {
+  max-height: 100px; /* 🔧 Resize logo */
+  width: 300px;
+
+  /* 🔧 Customize alignment */
+  display: block;
+  margin-left: 0px;   /* Align logo to right */
+  margin-right: auto;  /* Center logo */
+  /* or remove both for default alignment */
+}
+
+/* 🎯 Headline */
+.marvel-title {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: black;
+}
+
+/* 🎯 Description */
+.marvel-description {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  max-width: 700px;
+  color: black;
+}
+
+/* 🎯 Button Styling */
+.btn-dark {
+  border-radius: 25px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-dark:hover {
+  background-color: red;
+  color: white;
+}
+
+/* marvele endedd */
+
+
+/* DC */
+
+
+/* 🎨 DC Section Background */
+.dc-section {
+  background-image: url('https://i.pinimg.com/736x/7a/38/7f/7a387f9a138405f8a0ebb03a7854b633.jpg'); /* DC background image */
+ background-size: 100% 100%; /* 🔄 Force landscape */
+  background-position: center;
+  background-repeat: no-repeat;
+  color: black;
+}
+
+/* 🖼️ DC Figures Image */
+.dc-figures {
+  border-radius: 20px;
+  max-height: 580px;
+  object-fit: cover;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+
+  /* Center image within container */
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+/* 🌀 DC Logo */
+.dc-logo {
+    border-radius: 150px;
+  max-height: 250px;   /* 🔧 Adjust logo size */
+  width: auto;
+  display: block;
+  margin-left: 0;      /* 🔧 Align left */
+  margin-right: auto;
+}
+
+/* 📝 Text Content Adjustments */
+.dc-text h2 {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+   color: black;
+}
+
+.dc-text p {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.6;
+   color: black;
+}
+
+
+/* end of dc  */
+
+/* start  of anime section  */
+
+/* 🎨 Anime Section Background */
+.anime-section {
+  background-image: url('https://i.pinimg.com/736x/4e/6a/ef/4e6aefba37bc78457fec72ee6c3c6eff.jpg'); /* 🎯 Change background here */
+  background-size: 100% 100%; /* 🔄 Force landscape */
+  background-position: center;
+  background-repeat: no-repeat;
+  color: black;
+}
+
+/* 🖼️ Anime Figures */
+.anime-figure {
+  border-radius: 20px;
+  max-height: 550px;         /* 🔧 Adjust max height of images */
+  object-fit: cover;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  width: 100%;
+}
+
+/* 🖋️ Anime Logo Text */
+.anime-logo {
+  font-size: 3rem;           /* 🔧 Logo font size */
+  font-family: 'Orbitron', sans-serif; /* 🔧 Change font here */
+  letter-spacing: 3px;
+  color: black;
+}
+
+/* 📜 Tagline */
+.anime-tagline {
+  font-size: 0.9rem;
+  letter-spacing: 1.5px;
+  color: black;
+}
+
+/* 🧠 Responsive tweaks */
+@media (max-width: 768px) {
+  .anime-logo {
+    font-size: 2rem;
+  }
+
+  .anime-figure {
+    max-height: 400px;
+  }
+
+  .anime-tagline {
+    font-size: 0.8rem;
+  }
+}
+
+/* seeking */
+
+
+/* 🎯 Section Background and Layout */
+.seeking-section {
+  background-image: url('/images/whatare.jpg'); /* 🔧 Change background */
+  background-size: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 40vh; /* 🖼️ Full screen height */
+  color: black;
+  position: relative;
+  padding: 20px;
+}
+
+/* 🎨 Text Styling */
+.seeking-text h2 {
+  font-size: 2.5rem; /* 🔧 Change font size */
+  font-weight: bold;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  transform: rotate(-5deg); /* 🔄 Tilt for style */
+}
+
+/* 🎯 Highlighted Red Text */
+.seeking-highlight {
+  color: red; /* 🔧 Customize highlight color */
+}
+
+/* 📱 Responsive Adjustments */
+@media (max-width: 768px) {
+  .seeking-text h2 {
+    font-size: 1.8rem;
+  }
+}
+
+
+/* card section */
+/* 🟠 Background & Layout */
+/* 🟠 Marvel Products Section */
+/* 🟠 Marvel Products Section */
+/* 🧱 Product Section Background */
+/* 🧱 Hero Product Section Background */
+.hero-products-section1 {
+  background-image: url('https://i.pinimg.com/736x/72/c4/d4/72c4d4a2faf2e625966a7270fb07808e.jpg'); /* ✏️ Change background image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: black;
+}
+.hero-products-section2 {
+  background-image: url('https://i.pinimg.com/736x/7a/38/7f/7a387f9a138405f8a0ebb03a7854b633.jpg'); /* ✏️ Change background image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: black;
+}
+.hero-products-section3 {
+  background-image: url('https://i.pinimg.com/736x/4e/6a/ef/4e6aefba37bc78457fec72ee6c3c6eff.jpg'); /* ✏️ Change background image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: black;
+}
+
+/* ✨ Section Title Style */
+.section-title {
+  font-family: 'Bangers', cursive;
+  font-size: 2.5rem;
+  color: #000;
+}
+
+.highlight-title {
+  color: #f1f1f1;
+  text-shadow: 2px 2px #000;
+}
+
+/* 🧃 Individual Product Card Styling */
+.hero-product-card {
+  background-color: #ffffff;
+  border-radius: 20px;
+   width: 200px; /* 🔁 Change this value to control width */
+  margin: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  border: 1px solid #ccc;
+}
+
+.hero-product-card:hover {
+  transform: translateY(-8px);
+}
+
+.hero-product-card img {
+  height: 220px; /* ✏️ Adjust image size */
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.hero-product-card h5 {
+  font-size: 1.1rem;
+  color: #222;
+}
+
+.price del {
+  color: #888;
+  margin-left: 5px;
+}
+
+.rating {
+  color: #f59e0b;
+  font-weight: bold;
+}
+
+/* 🖱️ View All Button */
+.btn-dark {
+  border-radius: 50px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* heloos revies */
+
+/* 🌄 Review Section Background */
+.review-section {
+  background-image: url('https://i.pinimg.com/736x/f6/4d/49/f64d49dc4e2625132d3559c602a01a5f.jpg'); /* 🎯 Customize background */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 💬 Review Card Styling */
+.review-card {
+  background-color: rgba(0, 0, 0, 0.65); /* 🪄 Semi-transparent overlay */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+/* 🖱️ Hover effect */
+.review-card:hover {
+  transform: translateY(-5px);
+}
+
+/* 📝 Review Text */
+.review-text {
+  font-style: italic;
+  font-size: 0.95rem;
+}
