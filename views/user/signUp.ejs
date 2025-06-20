@@ -88,6 +88,12 @@
       height: 20px;
       border-radius: 50%;
     }
+    .error-message{
+      color: rgb(60, 255, 0);
+      font-size: 0.75rem;
+      display: none;
+
+    }
   </style>
 </head>
 <body>
@@ -98,33 +104,38 @@
       <h4>Hammer Collection</h4>
     </div>
     <h3>Sign UP</h3>
-    <form class="mt-4">
+    <form class="mt-4" id="sing_Form">
       <div class="mb-3 text-start">
         <label>Full Name:</label>
-        <input type="text" class="form-control" required>
+        <input type="text"  id="name" name="name" class="form-control"     >
+        <div id="error1" class="error-message" ></div>
       </div>
       <div class="mb-3 text-start">
         <label>Email:</label>
-        <input type="email" class="form-control" required>
+        <input type="text" id="email" name="email" class="form-control"  >
+        <div id="error2" class="error-message" ></div>
       </div>
       <div class="mb-3 text-start">
         <label>Phone No:</label>
-        <input type="tel" class="form-control" required>
+        <input type="tel" id="phone" name="phone" class="form-control"  >
+        <div id="error3" class="error-message" ></div>
       </div>
       <div class="mb-3 text-start">
         <label>Password:</label>
-        <input type="password" class="form-control" required>
+        <input type="password"  id="password" name="password" class="form-control"  >
+        <div id="error4" class="error-message" ></div>
       </div>
       <div class="mb-3 text-start">
         <label>Confirm Password:</label>
-        <input type="password" class="form-control" required>
+        <input type="password" name="cpassword" id="cpassword" class="form-control" >
+        <div id="error5" class="error-message" ></div>
       </div>
       <div class="text-center my-3">or</div>
       <div class="google-btn">
         <img src="https://i.pinimg.com/736x/60/41/99/604199df880fb029291ddd7c382e828b.jpg" class="google-icon">
         <span>O O G L E</span>
       </div>
-      <button type="submit" class="continue-btn">CONTINUE</button>
+      <button type="submit" class="continue-btn" id="submit-btn">CONTINUE</button>
     </form>
     <div class="bottom-text">
       Already have account ? <a href="#">Login now...!</a>
@@ -133,3 +144,140 @@
 
 </body>
 </html>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const nameId = document.getElementById("name");
+  const emailId = document.getElementById("email");
+  const phoneId = document.getElementById("phone");
+  const passwardId = document.getElementById("password"); 
+  const cpasswordId = document.getElementById("cpassword");
+  const error1 = document.getElementById("error1");
+  const error2 = document.getElementById("error2");
+  const error3 = document.getElementById("error3");
+  const error4 = document.getElementById("error4");
+  const error5 = document.getElementById("error5");
+  const signForm = document.getElementById("sing_Form");
+  const submitBtn = document.getElementById('submit-btn');
+
+  function nameValidateChecking() {
+    const nameVal = nameId.value.trim();
+    const namePattern = /^[A-Za-z\s]+$/;
+    if (nameVal === "") {
+      error1.style.display = "block";
+      error1.innerHTML = "Please enter a valid name";
+      return false;
+    } else if (!namePattern.test(nameVal)) {
+      error1.style.display = "block";
+      error1.innerHTML = "Name can only contain alphabets and spaces";
+      return false;
+    } else {
+      error1.style.display = "none";
+      return true;
+    }
+  }
+
+  function emailValidateChecking() {
+    const emailVal = emailId.value.trim();
+    const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    if (!emailPattern.test(emailVal)) {
+      error2.style.display = "block";
+      error2.innerHTML = "Invalid email format";
+      return false;
+    } else {
+      error2.style.display = "none";
+      return true;
+    }
+  }
+
+  function phoneValidateChecking() {
+    const phoneVal = phoneId.value.trim();
+    if (phoneVal.length !== 10 ) {
+      error3.style.display = "block";
+      error3.innerHTML = "Enter a 10-digit number";
+      return false;
+    } else {
+      error3.style.display = "none";
+      return true;
+    }
+  }
+
+  function passValidateChecking() {
+  const passval = passwardId.value;
+  const cpassval = cpasswordId.value;
+  const passPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
+
+  let isValid = true;
+
+  if (!passPattern.test(passval)) {
+    error4.style.display = "block";
+    error4.innerHTML = "Password must be 8+ chars, with uppercase, lowercase, digit, and symbol.";
+    isValid = false;
+  } else {
+    error4.style.display = "none";
+  }
+
+  if (passval !== cpassval) {
+    error5.style.display = "block";
+    error5.innerHTML = "Passwords do not match.";
+    isValid = false;
+  } else {
+    error5.style.display = "none";
+  }
+
+  return isValid;
+}
+
+
+  signForm.addEventListener('submit', async function (e) {
+    e.preventDefault(); 
+    const isNameValid = nameValidateChecking();
+    const isEmailValid = emailValidateChecking();
+    const isPhoneValid = phoneValidateChecking();
+    const isPassValid = passValidateChecking();
+    
+    console.log(isEmailValid,isNameValid,isPassValid,isPhoneValid)
+    if (isNameValid && isEmailValid && isPhoneValid && isPassValid) {
+      submitBtn.textContent = "loading..."
+      
+      try{
+
+        const formData = {
+          name: nameId.value,
+          email: emailId.value,
+          phone: phoneId.value,
+          password: passwardId.value,
+          cpassword: cpasswordId.value
+        }
+
+        console.log(formData);
+        
+
+        const response = await fetch('/signup',{
+
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json()
+
+        if(response.ok){
+          window.location.href = result.redirectUrl
+        }else{
+          alert(result.message)
+        }
+
+      }catch(err){
+        alert(err.message)
+      }finally{
+        submitBtn.textContent= 'signup'
+      }
+
+    }
+  });
+});
+
+</script>
