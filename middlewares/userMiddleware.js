@@ -18,7 +18,42 @@ const loggedOut = async (req, res, next) => {
     }
 }
 
+
+const checkUserExists = async (req,res,next) => {
+
+    try{
+
+        if(!req.session.user){
+            req.session.user = null;
+            res.locals.user = null;
+            return next()
+        }
+
+        const user = await User.findById(req.session.user?._id).lean().select('-password')
+
+       
+        
+
+        if(user.isBlocked){
+            req.session.user = null;
+            res.locals.user = null;
+           return next()
+        }
+
+        res.locals.user = user
+        next();
+
+    }catch(err){
+        req.session.user = null
+        res.locals.user = null;
+        next()
+
+    }
+
+}
+
 module.exports = {
     loggedIn,
-    loggedOut
+    loggedOut,
+    checkUserExists
 }

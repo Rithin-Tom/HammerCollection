@@ -1,0 +1,462 @@
+<style>
+    .dot-status {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-green {
+  background-color: #28a745; /* Bootstrap green */
+}
+
+.dot-red {
+  background-color: #dc3545; /* Bootstrap red */
+}
+
+</style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<body class="bg-light">
+    <!-- Header -->
+    <div class="bg-primary text-white py-4 mb-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="h2 mb-1">Product Management</h1>
+                    <p class="mb-0 opacity-75">Manage your product catalog and inventory</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    
+                    <a href="/admin/addProduct" class="btn btn-light">
+                       <i class="fas fa-plus me-1"></i>Add Product
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Bulk Actions Panel -->
+       
+
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Search Products</label>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Product name, SKU...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="categoryFilter">
+                             <option value="">All</option>
+                            <% categories.forEach(cate=>{%>
+                                <option value="<%= cate._id%>"><%= cate.name %></option>
+
+                             <% }) %>
+                            
+                            
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="available">available</option>
+                            <option value="sold_out">sold_out</option>
+                            <option value="discountinued">discountinued</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Price Range</label>
+                        <select class="form-select" id="priceFilter">
+                            <option value="">All Prices</option>
+                            <option value="0-500">₹0 - ₹500</option>
+                            <option value="500-1000">₹500 - ₹1000</option>
+                            <option value="1000+">₹1000+</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="applyFilters()">
+                            <i class="fas fa-filter me-1"></i>Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Products</h5>
+                <span class="text-muted" id="productCount">Showing 0 products</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-primary">
+                            <tr>
+                               <td class="text-center"><span class="dot-status ${product.isDeleted ? 'dot-red' : 'dot-green'}"></span></td>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th width="120">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Products will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">Show</span>
+                        <select class="form-select form-select-sm me-2" style="width: auto;" id="itemsPerPage">
+                            <option value="5" selected>5</option>
+                            <option value="10" >10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span id="paginationInfo">of 0 results</span>
+                    </div>
+                    
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0" id="pagination">
+                            <!-- Pagination will be populated here -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Sample product data
+        let products = [];
+
+       let filteredProducts = [...products];
+        let currentPage = 1;
+        let itemsPerPage = 5;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded',  async function() {
+            await fetchProductsFromServer();
+           
+            setupEventListeners();
+        });
+
+        async function  fetchProductsFromServer() {
+            try {
+                const res = await fetch('/admin/api/products')
+                 const data = await res.json()
+                
+                if(data.success){
+                    products = data.products;
+                    filteredProducts = [...products];
+                     renderProducts();
+                }else {
+                    alert('Failed to load products.');
+                }
+
+
+
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                 alert('Something went wrong while fetching products.');
+                
+            }
+            
+        }
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('priceFilter').addEventListener('change', applyFilters);
+            document.getElementById('itemsPerPage').addEventListener('change', function() {
+                itemsPerPage = parseInt(this.value);
+                currentPage = 1;
+                renderProducts();
+            });
+            document.getElementById('selectAll').addEventListener('change', toggleSelectAll);
+        }
+
+        async function applyFilters() {
+               const search = document.getElementById('searchInput').value.trim();
+                const category = document.getElementById('categoryFilter').value;
+                const status = document.getElementById('statusFilter').value;
+                const price = document.getElementById('priceFilter').value;
+
+
+                const queryParams = new URLSearchParams();
+                if(search) queryParams.append('keyword',search);
+                if(category)queryParams.append('category',category);
+                if(status)queryParams.append('status',status);
+                if(price)queryParams.append('price',price);
+                
+                
+                try {
+                    const res = await fetch(`/admin/api/products?${queryParams.toString()}`)
+                    const data = await res.json();
+
+                    if(data.success){
+                        products=data.products;
+                        filteredProducts =[...products];
+                        currentPage=1;
+                        renderProducts();
+                    }else{
+                        alert('fail to fetch filltered products')
+                    }
+
+
+
+                } catch (error) {
+                    console.error('Error applying filters:', err);
+                         alert('Server error while filtering products.');
+                    
+                }
+            
+        }
+
+       
+
+        function renderProducts() {
+            const tbody = document.getElementById('productsTableBody');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+            tbody.innerHTML = '';
+
+            paginatedProducts.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                   <td class="text-center">
+                      <span class="dot-status ${product.isDeleted ? 'dot-red' : 'dot-green'}"></span>
+                    </td>
+
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="/${product.productImage[0]}" alt="${product.productName}" class="rounded me-3" width="40" height="40">
+                            <div>
+                                <div class="fw-bold">${product.productName}</div>
+                                <small class="text-muted">${product.description.substring(0, 40)}...</small>
+                            </div>
+                        </div>
+                    </td>
+                  
+                    <td class="text-capitalize">${product.category.name}</td>
+                    <td>₹${product.salePrice}</td>
+                    <td>${product.quantity}</td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(product.status)}">${product.status.replace('-', ' ')}</span>
+                    </td>
+                    <td>
+                       <div class="btn-group btn-group-sm">
+                          <!-- Eye or Eye-Slash Button -->
+                          ${product.isDeleted 
+
+                            ? `<button class="btn btn-outline-success btn-sm" onclick="toggleBlockProduct('${product._id}', false)" title="Unblock">
+                                 <i class="fas fa-eye"></i>
+                               </button>`
+                            : `<button class="btn btn-outline-warning btn-sm" onclick="toggleBlockProduct('${product._id}', true)" title="Block">
+                                 <i class="fas fa-eye-slash"></i>
+                               </button>`
+                          }
+                           
+                          <!-- Edit Button -->
+                          <button class="btn btn-outline-secondary btn-sm" onclick="editProduct('${product._id}')" title="Edit">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                      
+                          <!-- Delete Button -->
+                          <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct('${product._id}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updatePagination();
+            updateProductCount();
+        }
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'published': return 'bg-success';
+                case 'draft': return 'bg-warning';
+                case 'out-of-stock': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            pagination.innerHTML = '';
+
+            // Previous button
+            const prevButton = document.createElement('li');
+            prevButton.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevButton.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>`;
+            pagination.appendChild(prevButton);
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const pageButton = document.createElement('li');
+                    pageButton.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    pageButton.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+                    pagination.appendChild(pageButton);
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    const ellipsis = document.createElement('li');
+                    ellipsis.className = 'page-item disabled';
+                    ellipsis.innerHTML = '<span class="page-link">...</span>';
+                    pagination.appendChild(ellipsis);
+                }
+            }
+
+            // Next button
+            const nextButton = document.createElement('li');
+            nextButton.className = `page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`;
+            nextButton.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>`;
+            pagination.appendChild(nextButton);
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderProducts();
+            }
+        }
+
+        function updateProductCount() {
+            const count = document.getElementById('productCount');
+            const info = document.getElementById('paginationInfo');
+            count.textContent = `Showing ${filteredProducts.length} products`;
+            info.textContent = `of ${filteredProducts.length} results`;
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        // Product actions
+        
+        
+        
+        function editProduct(id) {
+            window.location.href = `/admin/editProduct/${id}`;;
+        }
+
+        function publishProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.status = 'published';
+                renderProducts();
+                alert(`Product "${product.productName}" has been published`);
+            }
+        }
+
+        function unpublishProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.status = 'draft';
+                renderProducts();
+                alert(`Product "${product.productName}" has been unpublished`);
+            }
+        }
+
+  async function deleteProduct(id) {
+   
+    const product = products.find(p => p._id === id);
+ 
+  
+    if (product && confirm(`Are you sure you want to delete "${product.productName}"?`)) {
+    try {
+        const res = await fetch(`/admin/api/products/${product._id}`, {
+        method: 'DELETE'
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+        // products = products.filter(p => p.id !== id);
+        // applyFilters();
+        alert(`Product "${product.productName}" has been deleted`);
+        window.location.href = '/admin/products'; 
+        } else {
+        alert(data.message || 'Failed to delete product.');
+        }
+    } catch (err) {
+        alert('Server error while deleting product.');
+        console.error(err);
+    }
+    }
+
+}
+
+
+async function toggleBlockProduct(productId, isDeleted) {
+    
+  try {
+    const res = await fetch(`/admin/api/products/${productId}/delete-status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isDeleted }),
+    });
+
+    const data = await res.json();
+
+ if (data.success) {
+  Swal.fire({
+    icon: 'success',
+    title: `Product ${isDeleted ? 'blocked' : 'unblocked'}!`,
+    text: `The product has been ${isDeleted ? 'soft-deleted (blocked)' : 'restored'} successfully.`,
+    timer: 1500,
+    showConfirmButton: false
+  });
+
+  await fetchProductsFromServer(); // refresh UI
+} else {
+  Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: 'Failed to update product status.',
+  });
+}
+
+  } catch (error) {
+    console.error('Error updating product status:', error);
+    alert('Server error while updating product status.');
+  }
+}
+
+
+
+    </script>
+</body>

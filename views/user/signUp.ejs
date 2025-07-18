@@ -131,14 +131,18 @@
         <div id="error5" class="error-message" ></div>
       </div>
       <div class="text-center my-3">or</div>
+
       <div class="google-btn">
+        <a href="/auth/google" style="color: aliceblue;">
         <img src="https://i.pinimg.com/736x/60/41/99/604199df880fb029291ddd7c382e828b.jpg" class="google-icon">
         <span>O O G L E</span>
+        </a>
       </div>
+
       <button type="submit" class="continue-btn" id="submit-btn">CONTINUE</button>
     </form>
     <div class="bottom-text">
-      Already have account ? <a href="#">Login now...!</a>
+      Already have account ? <a href="/login">Login now...!</a>
     </div>
   </div>
 
@@ -238,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const isPhoneValid = phoneValidateChecking();
     const isPassValid = passValidateChecking();
     
-    console.log(isEmailValid,isNameValid,isPassValid,isPhoneValid)
+    
     if (isNameValid && isEmailValid && isPhoneValid && isPassValid) {
       submitBtn.textContent = "loading..."
       
@@ -252,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
           cpassword: cpasswordId.value
         }
 
-        console.log(formData);
+      
         
 
         const response = await fetch('/signup',{
@@ -262,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
           body: JSON.stringify(formData)
         });
 
+       
         const result = await response.json()
 
         if(response.ok){

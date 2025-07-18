@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= product.productName %> - Product Detail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    /* .bg-comic {
+      background-image: url('https://i.pinimg.com/736x/31/8e/f9/318ef9761da0a005f2ed5d67c38deed5.jpg'); 
+      background-size: cover;
+      background-position: center;
+      padding: 60px 20px;
+    } */
+    .bg-comic {
+  background-image: url('https://i.pinimg.com/736x/31/8e/f9/318ef9761da0a005f2ed5d67c38deed5.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* This keeps the background fixed */
+  min-height: 100vh;
+  padding: 60px 20px;
+}
+.card-bordered {
+  border: 2px solid black;
+  border-radius: 16px;
+}
+
+
+    .thumbnail-img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .thumbnail-img:hover {
+      transform: scale(1.1);
+    }
+    .main-image-wrapper {
+  width: 450px;
+  height: 450px;
+  background-color: white;
+  border: 2px solid black;
+  padding: 10px;
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+}
+
+/* 
+ */
+   .main-image-wrapper {
+    width: 400px;
+    height: 400px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+    transform-origin: center;
+  }
+ /*  */
+
+.main-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+
+    .quantity-input {
+      width: 50px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body   >
+<div  class="bg-comic">
+<!-- Product Detail Section -->
+ <section class="container mb-5">
+
+  <div class="container">
+    <div class="row align-items-center gy-4">
+      
+      <!-- Left Side: Images -->
+      <div class="col-lg-6 d-flex">
+        <!-- Thumbnails -->
+        <div class="d-flex flex-column me-3">
+          <% product.productImage.forEach((img, index) => { %>
+            <img src="/<%= img %>" class="thumbnail-img img-thumbnail mb-2"
+              style="border: 2px solid black; border-radius: 10px;"
+              onclick="changeImage(this)">
+          <% }) %>
+        </div>
+
+        <!-- Main Image -->
+        <div id="imageZoom" class="main-image-wrapper">
+          <img id="mainProductImage" class="main-img" src="/<%= product.productImage[0] %>" alt="Product Image">
+        </div>
+
+      </div>
+
+      <!-- Right Side: Details -->
+      <div class="col-lg-6">
+        <div class="p-4 bg-primary bg-opacity-75 text-white rounded-4 shadow"    style="height: 100%; width: 100%; min-height: 400px;" >
+          <h2 class="fw-bold"><%= product.productName %></h2>
+          <div class="mb-2">
+            <span class="text-warning">&#9733; &#9733; &#9733; &#9733; &#9734;</span>
+             <small>(<%= product.reviews?.length || 0 %> reviews)</small>
+            <span class="text ms-2"><%= product.quantity > 0 ? 'In Stock' : 'Out of Stock' %></span>
+          </div>
+
+          <!-- Price -->
+           <h4>₹<%= product.salePrice.toLocaleString() %>
+              <% if (product.regularPrice > product.salePrice) { %>
+                <del class="text-light fs-6 ms-2">₹<%= product.regularPrice.toLocaleString() %></del>
+                <span class="badge bg-danger ms-2">
+                  <%= Math.round((1 - product.salePrice / product.regularPrice) * 100) %>% OFF
+                </span>
+              <% } %>
+            </h4>
+
+          <!-- Description -->
+          <p class="fst-italic"><%= product.description %></p>
+
+          <!-- Quantity Controls -->
+          <div class="d-flex align-items-center mb-3">
+            <button class="btn btn-outline-light btn-sm me-2" onclick="decreaseQty()">-</button>
+            <input type="text" id="quantityInput" class="form-control form-control-sm quantity-input me-2" value="2">
+            <button class="btn btn-outline-light btn-sm me-3" onclick="increaseQty()">+</button>
+
+            <button class="btn btn-dark me-2">Add to Cart</button>
+            <button class="btn btn-outline-light"><i class="bi bi-heart"></i></button>
+          </div>
+
+          <!-- Delivery Info -->
+          <div class="text-white-50 small">
+            <p><i class="bi bi-truck me-2"></i>Free Delivery — <a href="#" class="text-white-50 text-decoration-underline">Check Availability</a></p>
+            <p><i class="bi bi-arrow-counterclockwise me-2"></i>Return Delivery — Free 30 Days Return</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- second page -->
+ <section class="container">
+    <div class="bg-primary bg-opacity-75 text-white rounded-4 shadow p-4">
+      <!-- Tabs Navigation -->
+<ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button">Description</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">Reviews</button>
+  </li>
+</ul>
+
+<!-- Tabs Content -->
+<div class="tab-content" id="myTabContent">
+
+  <!-- Description Tab -->
+  <div class="tab-pane fade show active" id="description" role="tabpanel">
+    <h3 class="mb-3"><%= product.productName %> – Description</h3>
+    <p><%= product.fullDescription || product.description || "No detailed description available." %></p>
+  </div>
+
+  <!-- Reviews Tab -->
+  <div class="tab-pane fade" id="reviews" role="tabpanel">
+    <% if (product.reviews && product.reviews.length > 0) { %>
+      <p class="mb-3">⭐ <strong><%= product.rating?.toFixed(1) || "4.5" %>/5</strong> based on <%= product.reviews.length %> reviews</p>
+      
+      <% product.reviews.forEach(review => { %>
+        <div class="mb-3">
+          <strong><%= review.name %></strong>
+          <span class="text-warning ms-2">
+            <% for (let i = 1; i <= 5; i++) { %>
+              <%= i <= review.rating ? "★" : "☆" %>
+            <% } %>
+          </span>
+          <p class="mb-1"><%= review.comment %></p>
+          <hr>
+        </div>
+      <% }) %>
+
+    <% } else { %>
+      <p>No reviews yet. Be the first to review this product!</p>
+    <% } %>
+  </div>
+
+</div>
+
+    </div>
+  </section>
+
+
+<!-- card section  -->
+<section class="container my-5">
+  <h4 class="bg-primary text-white py-2 px-4 rounded-pill mb-4 d-inline-block">🌀 Related Item</h4>
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+    <!-- Card 1 -->
+   <% relatedProducts.forEach(item => { %>
+  <div class="col">
+    <a href="/product/<%= item._id %>" class="text-decoration-none text-dark">
+    <div class="card-bordered p-3 text-center shadow-sm bg-white">
+      <img src="/<%= item.productImage[0] %>" class="img-fluid rounded" style="height: 300px; object-fit: contain;">
+      <h6 class="mt-3 mb-1"><%= item.productName %></h6>
+      <p class="mb-1"><strong>₹<%= item.salePrice.toLocaleString() %></strong>
+        <del class="text-muted">₹<%= item.regularPrice.toLocaleString() %></del>
+      </p>
+      <div class="text-warning small">★ ★ ★ ★ ☆</div>
+    </div>
+    </a>
+  </div>
+<% }) %>
+  </div>
+</section>
+</div>
+
+<!-- Bootstrap JS (optional for collapse, modal, etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Inline JavaScript -->
+<script>
+  function changeImage(imgElement) {
+    const mainImage = document.getElementById('mainProductImage');
+    mainImage.src = imgElement.src;
+  }
+
+  function increaseQty() {
+    const input = document.getElementById('quantityInput');
+    let value = parseInt(input.value);
+    if (!isNaN(value)) {
+      input.value = value + 1;
+    }
+  }
+
+  function decreaseQty() {
+    const input = document.getElementById('quantityInput');
+    let value = parseInt(input.value);
+    if (!isNaN(value) && value > 1) {
+      input.value = value - 1;
+    }
+  }
+
+
+
+const image = document.getElementById("mainProductImage");
+  const wrapper = document.getElementById("imageZoom");
+
+  wrapper.addEventListener("mousemove", function (e) {
+    const bounds = this.getBoundingClientRect();
+    const x = ((e.clientX - bounds.left) / bounds.width) * 100;
+    const y = ((e.clientY - bounds.top) / bounds.height) * 100;
+
+    image.style.transformOrigin = `${x}% ${y}%`;
+    image.style.transform = "scale(3)"; // You can increase to 2.5 for stronger zoom
+  });
+
+  wrapper.addEventListener("mouseleave", function () {
+    image.style.transform = "scale(1)";
+    image.style.transformOrigin = "center";
+  });
+
+
+</script>
+
+</body>
+</html>

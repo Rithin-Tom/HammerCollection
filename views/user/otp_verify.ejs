@@ -114,7 +114,7 @@
         <input type="text" maxlength="1" class="otp-input" required>
       </div>
 
-      <div class="timer-text" id="timer">Resend OTP in <span id="countdown">60</span>s</div>
+      <div class="timer-text" id="timer">Resend OTP in <span id="countdown">30</span>s</div>
       <button type="button" class="resend-btn" id="resendBtn" disabled onclick="resendOtp()">Resend OTP</button>
 
       <button type="submit" class="submit-btn mt-3">SUBMIT</button>
@@ -126,7 +126,7 @@
   const countdownEl = document.getElementById("countdown");
   const resendBtn = document.getElementById("resendBtn");
 
-  let timeLeft = localStorage.getItem("otp-timer") || 10;
+  let timeLeft = localStorage.getItem("otp-timer") || 30;
   let timer = setInterval(updateCountdown, 1000);
 
   function updateCountdown() {
@@ -138,7 +138,7 @@
       if (timeLeft <= 0) {
         clearInterval(timer);
         resendBtn.disabled = false;
-        localStorage.setItem("otp-timer",1);
+        localStorage.setItem("otp-timer",30);
       }
     }else{
       countdownEl.textContent=timeLeft
@@ -164,10 +164,10 @@
   resendBtn.addEventListener("click", () => {
     alert("OTP resent!");
     resendBtn.disabled = true;
-    timeLeft = 10;
+    timeLeft = 30;
     countdownEl.textContent = timeLeft;
 
-    timer = setInterval(updateCountdown, 1000);
+    timer = setInterval(updateCountdown, 6000);
   });
 
 document.getElementById('otpForm').addEventListener('submit', async (e)=>{
@@ -210,7 +210,7 @@ document.getElementById('otpForm').addEventListener('submit', async (e)=>{
            if (data.success) {
           Swal.fire("Sent!", "OTP has been resent", "success");
           resendBtn.disabled = true;
-          timeLeft = 10;
+          timeLeft = 30;
           localStorage.setItem("otp-timer", timeLeft);
           countdownEl.textContent = timeLeft;
           timer = setInterval(updateCountdown, 1000);

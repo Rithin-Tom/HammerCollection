@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Product</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      display: none;
+      margin-top: 0.25rem;
+    }
+    
+    .error-visible {
+      display: block !important;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .image-upload-area {
+      border: 3px dashed #dee2e6;
+      border-radius: 1rem;
+      background-color: #f8f9fa;
+      padding: 3rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .image-upload-area:hover {
+      border-color: #0d6efd;
+      background-color: #e7f3ff;
+      transform: translateY(-2px);
+    }
+    
+    .image-preview-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 1rem;
+      overflow: hidden;
+      background-color: #f8f9fa;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      transition: all 0.3s ease;
+    }
+    
+    .image-preview-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .image-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .remove-image-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 2rem;
+      height: 2rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      opacity: 0.9;
+      transition: all 0.3s ease;
+    }
+    
+    .remove-image-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    
+    .custom-checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid #dee2e6;
+      border-radius: 0.375rem;
+      background-color: white;
+      transition: all 0.3s ease;
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .custom-checkbox.checked {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    
+    .custom-checkbox.checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 0.875rem;
+      font-weight: bold;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .loading-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .loading-spinner {
+      width: 3rem;
+      height: 3rem;
+      border: 3px solid #dee2e6;
+      border-top: 3px solid #0d6efd;
+      border-radius: 50%;
+    }
+    
+    .crop-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .crop-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .crop-modal-content {
+      background-color: white;
+      border-radius: 1rem;
+      box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+      max-width: 48rem;
+      width: 90%;
+      max-height: 90vh;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+    
+    .crop-modal.show .crop-modal-content {
+      transform: scale(1);
+    }
+    
+    .crop-image-container {
+      max-width: 100%;
+      max-height: 24rem;
+      overflow: hidden;
+    }
+    
+    .crop-image-container img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    .section-icon {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+    }
+    
+    .price-input-group {
+      display: flex;
+      border: 2px solid #dee2e6;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .price-input-group:focus-within {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .price-input-group .input-group-text {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      border: none;
+      font-weight: 600;
+    }
+    
+    .price-input-group .form-control {
+      border: none;
+      box-shadow: none;
+    }
+    
+    .price-input-group .form-control:focus {
+      border: none;
+      box-shadow: none;
+    }
+    
+    .form-control:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-select:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+      border: none;
+      box-shadow: 0 0.25rem 0.5rem rgba(13, 110, 253, 0.25);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0.5rem 1rem rgba(13, 110, 253, 0.35);
+    }
+    
+    .border-danger {
+      border-color: #dc3545 !important;
+    }
+    
+    .ring-danger {
+      box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+    }
+  </style>
+</head>
+<body class="gradient-bg">
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="text-center">
+      <div class="loading-spinner animate-spin mx-auto mb-3"></div>
+      <p class="mb-0">Processing...</p>
+    </div>
+  </div>
+
+  <div class="container-fluid py-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-xl-10">
+        <div class="card shadow-lg border-0">
+          <!-- Header -->
+          <div class="card-header bg-light border-0 p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h1 class="h3 mb-1 fw-bold text-dark">Create Product</h1>
+                <p class="text-muted mb-0 small">Add a new product to your inventory</p>
+              </div>
+              <a href="/admin/products" class="btn btn-outline-secondary">
+                <span class="me-2">←</span>
+                Back to Products
+              </a>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div class="card-body p-4">
+            <% if (messages && messages.error && messages.error.length > 0) { %>
+              <div class="alert alert-danger d-flex align-items-center" id="error-msg">
+                <span class="me-2">⚠</span>
+                <%= messages.error[0] %>
+              </div>
+            <% } %>
+            <% if (messages && messages.success && messages.success.length > 0) { %>
+              <div class="alert alert-success d-flex align-items-center" id="success-msg">
+                <span class="me-2">✅</span>
+                <%= messages.success[0] %>
+              </div>
+            <% } %>
+            <div class="alert alert-danger d-flex align-items-center d-none" id="dynamic-error-msg"></div>
+            <div class="alert alert-success d-flex align-items-center d-none" id="dynamic-success-msg"></div>
+          </div>
+
+          <!-- Product Form -->
+          <form id="product-form" enctype="multipart/form-data" class="p-4">
+            <!-- Basic Information -->
+            <div class="card mb-4 card-hover">
+              <div class="card-header bg-white">
+                <h4 class="mb-0 fw-bold">
+                  <span class="section-icon">📝</span>
+                  Basic Information
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Product Name <span class="text-danger">*</span></label>
+                  <input type="text" id="product-name" name="name" class="form-control" placeholder="Enter product name">
+                  <div id="name-error" class="error-message"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Description</label>
+                  <textarea id="product-description" name="description" class="form-control" rows="4" placeholder="Enter product description"></textarea>
+                  <div id="description-error" class="error-message"></div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                      <select id="product-category" name="category" class="form-select" required>
+                        <option value="">Select category</option>
+                        <% categories.forEach(category => { %>
+                          <option value="<%= category._id %>"><%= category.name %></option>
+                        <% }) %>
+                      </select>
+                      <div id="category-error" class="error-message"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing & Stock -->
+            <div class="card mb-4 card-hover">
+              <div class="card-header bg-white">
+                <h4 class="mb-0 fw-bold">
+                  <span class="section-icon">💰</span>
+                  Pricing & Stock
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Regular Price <span class="text-danger">*</span></label>
+                      <div class="price-input-group">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" id="product-regular-price" name="regularPrice" class="form-control" placeholder="0.00" step="0.01" min="0" required>
+                      </div>
+                      <div id="regularPrice-error" class="error-message"></div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Sale Price</label>
+                      <div class="price-input-group">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" id="product-sale-price" name="salePrice" class="form-control" placeholder="0.00" step="0.01" min="0">
+                      </div>
+                      <div id="salePrice-error" class="error-message"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Stock Quantity</label>
+                  <input type="number" id="product-stock" name="stock" class="form-control" placeholder="0" min="0">
+                  <div id="stock-error" class="error-message"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Max Cart Quantity <span class="text-danger">*</span></label>
+                  <input type="number" id="product-max-cart-qty" name="maxCartQuantity" class="form-control" min="1" value="5" required>
+                  <div id="maxCartQuantity-error" class="error-message"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Images -->
+            <div class="card mb-4 card-hover">
+              <div class="card-header bg-white">
+                <h4 class="mb-0 fw-bold">
+                  <span class="section-icon">📸</span>
+                  Product Images
+                </h4>
+                <p class="text-muted mb-0 small">Upload at least 3 high-quality images of your product</p>
+              </div>
+              <div class="card-body">
+                <div class="image-upload-area" id="image-upload-area">
+                  <div class="text-center">
+                    <div style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;">📤</div>
+                    <p class="mb-2 fw-semibold text-dark">Click to upload or drag and drop</p>
+                    <span class="text-muted small">PNG, JPG up to 5MB each</span>
+                  </div>
+                  <input type="file" id="image-input" name="images" multiple accept="image/*" class="d-none">
+                </div>
+
+                <div class="row g-3 mt-3" id="image-preview-container"></div>
+                <div id="images-error" class="error-message"></div>
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="card mb-4 card-hover">
+              <div class="card-header bg-white">
+                <h4 class="mb-0 fw-bold">
+                  <span class="section-icon">⚙</span>
+                  Product Settings
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="p-3 bg-light rounded mb-3">
+                  <label class="d-flex align-items-center cursor-pointer user-select-none fw-medium">
+                    <input type="checkbox" id="product-active" name="isActive" checked class="d-none">
+                    <span class="custom-checkbox me-3" id="active-checkbox"></span>
+                    <span class="text-dark small">Active Product</span>
+                  </label>
+                </div>
+
+                <div class="p-3 bg-light rounded">
+                  <label class="d-flex align-items-center cursor-pointer user-select-none fw-medium">
+                    <input type="checkbox" id="product-featured" name="isFeatured" class="d-none">
+                    <span class="custom-checkbox me-3" id="featured-checkbox"></span>
+                    <span class="text-dark small">Featured Product</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="card-footer bg-light border-0">
+              <div class="d-flex gap-3 justify-content-end">
+                <a href="/admin/products" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" id="product-submit-btn">
+                  <span class="spinner-border spinner-border-sm me-2 d-none" id="product-spinner"></span>
+                  <span id="product-submit-text">Create Product</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Crop Modal -->
+  <div class="crop-modal" id="crop-modal">
+    <div class="crop-modal-content">
+      <div class="p-4 border-bottom bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+          <h3 class="mb-0 fw-bold">
+            <span class="section-icon">🖼</span>
+            Crop Image
+          </h3>
+          <button class="btn btn-outline-secondary btn-sm" onclick="closeCropModal()">×</button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="crop-image-container">
+          <img id="crop-image" src="/placeholder.svg" alt="Crop">
+        </div>
+      </div>
+      <div class="p-4 border-top bg-light">
+        <div class="d-flex gap-3 justify-content-end">
+          <button class="btn btn-outline-secondary" onclick="closeCropModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="applyCrop()">Apply Crop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script>
+    const BASE_URL = window.location.origin;
+    const MIN_IMAGES = 3;
+
+    const STATE = {
+      uploadedImages: [],        
+      cropper: null,
+      currentCropFile: null,
+      currentTarget: null, 
+      isLoading: false
+    };
+
+    function showLoading() {
+      STATE.isLoading = true;
+      const overlay = document.getElementById('loading-overlay');
+      overlay.classList.add('show');
+    }
+
+    function hideLoading() {
+      STATE.isLoading = false;
+      const overlay = document.getElementById('loading-overlay');
+      overlay.classList.remove('show');
+    }
+
+    function clearFormErrors() {
+      document.querySelectorAll('.error-message').forEach(el => {
+        el.textContent = '';
+        el.classList.remove('error-visible');
+      });
+
+      document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.classList.remove('border-danger', 'ring-danger');
+      });
+      
+      // Clear dynamic messages
+      document.getElementById('dynamic-error-msg').classList.add('d-none');
+      document.getElementById('dynamic-success-msg').classList.add('d-none');
+    }
+
+    function showFormError(fieldId, msg) {
+      const errorEl = document.getElementById(fieldId);
+      if (!errorEl) return;
+
+      errorEl.textContent = msg;
+      errorEl.classList.add('error-visible');
+      
+      const inputId = fieldId.replace('-error', '');
+      const input = document.getElementById(inputId) || document.getElementById('product-' + inputId);
+      if (input) {
+        input.classList.add('border-danger', 'ring-danger');
+      }
+    }
+
+    // Custom checkbox functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkboxes = [
+        { checkbox: document.getElementById('product-active'), customSpan: document.getElementById('active-checkbox') },
+        { checkbox: document.getElementById('product-featured'), customSpan: document.getElementById('featured-checkbox') }
+      ];
+      
+      checkboxes.forEach(({ checkbox, customSpan }) => {
+        function updateCheckbox() {
+          if (checkbox.checked) {
+            customSpan.classList.add('checked');
+          } else {
+            customSpan.classList.remove('checked');
+          }
+        }
+        
+        customSpan.addEventListener('click', () => {
+          checkbox.checked = !checkbox.checked;
+          updateCheckbox();
+        });
+        
+        checkbox.addEventListener('change', updateCheckbox);
+        updateCheckbox(); // Initial state
+      });
+    });
+
+    // Initialize image upload
+    function initializeImageUpload() {
+      const area = document.getElementById('image-upload-area');
+      const input = document.getElementById('image-input');
+
+      area.addEventListener('click', () => input.click());
+
+      area.addEventListener('dragover', e => {
+        e.preventDefault();
+        area.style.borderColor = '#0d6efd';
+        area.style.backgroundColor = '#e7f3ff';
+      });
+
+      area.addEventListener('dragleave', e => {
+        e.preventDefault();
+        area.style.borderColor = '#dee2e6';
+        area.style.backgroundColor = '#f8f9fa';
+      });
+
+      area.addEventListener('drop', e => {
+        e.preventDefault();
+        area.style.borderColor = '#dee2e6';
+        area.style.backgroundColor = '#f8f9fa';
+        handleFiles([...e.dataTransfer.files], 'main');
+      });
+
+      input.addEventListener('change', e => handleFiles([...e.target.files], 'main'));
+    }
+function handleFiles(files, target) {
+  let invalidFiles = [];
+
+  files.forEach(file => {
+    if (!file.type.startsWith('image/')) {
+      invalidFiles.push(file.name);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = e => openCropModal(e.target.result, file, target);
+    reader.readAsDataURL(file);
+  });
+
+  if (invalidFiles.length > 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid file type',
+      html: `
+        <p>Only image files are allowed.</p>
+        <p>Invalid files:</p>
+        <ul style="text-align:left">${invalidFiles.map(f => `<li>${f}</li>`).join('')}</ul>
+      `,
+      confirmButtonText: 'Okay',
+    });
+  }
+}
+
+
+
+    function openCropModal(src, file, target) {
+      STATE.currentTarget = target;
+      STATE.currentCropFile = file;
+      const img = document.getElementById('crop-image');
+      img.src = src;
+      const modal = document.getElementById('crop-modal');
+      modal.classList.add('show');
+
+      if (STATE.cropper) STATE.cropper.destroy();
+
+      STATE.cropper = new Cropper(img, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 0.8,
+        responsive: true,
+        background: false,
+        guides: true,
+        center: true,
+        highlight: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false
+      });
+    }
+
+    function closeCropModal() {
+      const modal = document.getElementById('crop-modal');
+      modal.classList.remove('show');
+      
+      if (STATE.cropper) {
+        STATE.cropper.destroy();
+        STATE.cropper = null;
+      }
+      STATE.currentCropFile = null;
+      STATE.currentTarget = null;
+    }
+
+    async function applyCrop() {
+      if (!STATE.cropper) return;
+
+      try {
+        const canvas = STATE.cropper.getCroppedCanvas({ width: 800, height: 800 });
+        canvas.toBlob(async blob => {
+          const fd = new FormData();
+          fd.append('image', blob, `img-${Date.now()}.jpg`);
+
+          showLoading();
+          const res = await fetch(`${BASE_URL}/admin/products/upload-image`, {
+            method: 'POST',
+            body: fd
+          });
+
+          const json = await res.json();
+        
+          
+          hideLoading();
+          if (!json.success) {
+            const errorMsg = document.getElementById('dynamic-error-msg');
+            errorMsg.innerHTML = '<span class="me-2">⚠</span>' + (json.message || 'Image upload failed');
+            errorMsg.classList.remove('d-none');
+            return;
+          }
+
+          if (STATE.currentTarget === 'main') {
+            STATE.uploadedImages.push(json.imageUrl);
+            renderMainPreviews();
+          }
+
+          closeCropModal();
+        }, 'image/jpeg', 0.9);
+      } catch (err) {
+        hideLoading();
+        console.error(err);
+        const errorMsg = document.getElementById('dynamic-error-msg');
+        errorMsg.innerHTML = '<span class="me-2">⚠</span>Error processing image';
+        errorMsg.classList.remove('d-none');
+      }
+    }
+
+    function renderMainPreviews() {
+      const container = document.getElementById('image-preview-container');
+      container.innerHTML = '';
+      STATE.uploadedImages.forEach((url, i) => {
+        const div = document.createElement('div');
+        div.className = 'col-6 col-sm-4 col-md-3 col-lg-2';
+        div.innerHTML = `
+          <div class="image-preview-item">
+            <img src="/${url}" alt="Product image ${i + 1}">
+            <button type="button" class="remove-image-btn" onclick="removeMainImage(${i})" title="Remove image">×</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function removeMainImage(i) {
+      STATE.uploadedImages.splice(i, 1);
+      renderMainPreviews();
+    }
+
+    async function  nameCheck(name) {
+      try {
+       
+        const res = await fetch(`${BASE_URL}/admin/products/nameCheck?name=${encodeURIComponent(name)}`);
+        const json = await res.json();
+        return json.exists
+      } catch (error) {
+           console.error('Name check failed', err);
+            return false;
+        
+      }
+      
+    }
+
+    // Form submission handler
+    document.getElementById('product-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      clearFormErrors();
+  
+
+      // Get form values
+      const name = document.getElementById('product-name').value.trim();
+      const description = document.getElementById('product-description').value.trim();
+      const category = document.getElementById('product-category').value;
+      const regularPrice = parseFloat(document.getElementById('product-regular-price').value) || 0;
+      const salePrice = parseFloat(document.getElementById('product-sale-price').value) || 0;
+      const stock = parseInt(document.getElementById('product-stock').value) || 1;
+      const maxCartQuantity = parseInt(document.getElementById('product-max-cart-qty').value) || 5;
+      const images = STATE.uploadedImages;
+      const isActive = document.getElementById('product-active').checked;
+      const isFeatured = document.getElementById('product-featured').checked;
+
+      // Validation
+      if (!name) {
+        return showFormError('name-error', 'Product name is required');
+      }
+      if(!description){
+        return showFormError('description-error', 'Product  description is required');
+      }
+       const isNameTaken =await nameCheck(name);
+       if (isNameTaken) {
+            return showFormError('name-error', 'Product name is already taken');
+          }
+
+      if (name.length < 3 || name.length > 50) {
+        return showFormError('name-error', 'Product name must be between 3-50 characters');
+      }
+
+      if (!/^[a-zA-Z0-9\s\-]+$/.test(name)) {
+        return showFormError('name-error', 'Product name can only contain letters, numbers, spaces, and dashes');
+      }
+
+      if (!category) {
+        return showFormError('category-error', 'Category is required');
+      }
+
+      if (regularPrice <= 0) {
+        return showFormError('regularPrice-error', 'Regular price must be greater than 0');
+      }
+      if (salePrice <= 0) {
+        return showFormError('salePrice-error', 'SalePrice price must be greater than 0');
+      }
+
+      if (salePrice > 0 && salePrice >= regularPrice) {
+        return showFormError('salePrice-error', 'Sale price must be less than regular price');
+      }
+
+      if (stock < 0) {
+        return showFormError('stock-error', 'Stock cannot be negative');
+      }
+
+      if (maxCartQuantity < 1) {
+        return showFormError('maxCartQuantity-error', 'Max cart quantity must be at least 1');
+      }
+
+      if (images.length < MIN_IMAGES) {
+        return showFormError('images-error', `At least ${MIN_IMAGES} images are required`);
+      }
+      if(images.length > 5){
+        return showFormError('images-error',' Only 5 images are needed ')
+      }
+
+      const payload = {
+        name,
+        description,
+        category,
+        regularPrice,
+        salePrice,
+        stock,
+        maxCartQuantity,
+        images,
+        isActive,
+        isFeatured,
+      };
+
+      showLoading();
+      document.getElementById('product-spinner').classList.remove('d-none');
+      document.getElementById('product-submit-btn').disabled = true;
+
+      try {
+        const res = await fetch(`${BASE_URL}/admin/products/api/create`, {
+          method: 'POST',
+          headers: { 'Content-type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        
+        const json = await res.json();
+
+        hideLoading();
+        document.getElementById('product-spinner').classList.add('d-none');
+        document.getElementById('product-submit-btn').disabled = false;
+
+        if (json.success) {
+          const successMsg = document.getElementById('dynamic-success-msg');
+          successMsg.innerHTML ='<span class="text-xl">✅</span> Product created successfully!';
+          document.getElementById('dynamic-success-msg').classList.remove('hidden');
+          setTimeout(() => window.location = '/admin/products', 1500);
+        } else if (json.errors) {
+          Object.entries(json.errors).forEach(([field, message]) => {
+            showFormError(`${field}-error`, message);
+          });
+        } else {
+          showFormError('dynamic-error-msg', json.message || 'Failed to save product');
+        }
+      } catch (err) {
+        hideLoading();
+        document.getElementById('product-spinner').classList.add('hidden');
+        document.getElementById('product-submit-btn').disabled = false;
+        console.error(err);
+        showFormError('dynamic-error-msg', 'An error occurred while saving');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeImageUpload();
+    });
+  </script>
+</body>
+</html>

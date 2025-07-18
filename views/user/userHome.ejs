@@ -1,44 +1,83 @@
-<!-- Hero Section with Product Slider -->
-<%- include('../partials/user/header') %>
+<style>
+  /* Ensure the carousel controls are vertically centered */
+.carousel-control-prev,
+.carousel-control-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Optional: make controls always visible (not fade based on hover) */
+.carousel-control-prev,
+.carousel-control-next {
+  opacity: 1;
+}
+
+.seeking-section {
+  background: black, url('https://i.pinimg.com/originals/68/64/e2/6864e296b6a5b9c4aa2a42974cb8ab85.jpg') no-repeat center center;
+  background-size: cover;
+  min-height: 60vh;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.seeking-highlight {
+  color: #FFD700;
+  text-shadow: 0 0 10px #000;
+}
+
+.seeking-text {
+  max-width: 700px;
+  padding: 1rem;
+}
+
+.seeking-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+
+
+</style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
  <link rel="stylesheet" href="/css/landingpage.css">
 <!-- Hero Section with Pyramid Product Slider -->
 <section class="hero-slider-section text-center py-5">
   <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
-    <div class="carousel-inner">
+   
 
       <!-- Slide 1 -->
-      <div class="carousel-item active">
-        <div class="d-flex justify-content-center gap-4 flex-wrap">
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/c6/dc/52/c6dc52deb23de94992da0f4b85d6f16b.jpg" alt="Doctor Strange" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/ed/1a/83/ed1a834abd8fd1e106390e793a9aaa2d.jpg" alt="Black Panther" /></div>
-          <div class="product-card center-card"><img src="https://i.pinimg.com/736x/25/d9/eb/25d9eb99eee23980140730cf06bdb8ed.jpg" alt="Batman" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/11/17/2c/11172cf46f2ab1e806297ed4b71a4f01.jpg" alt="Joker" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/ea/7c/b1/ea7cb1ffcb41b32a455dbc13a32e70e8.jpg" alt="Superman" /></div>
-        </div>
+       
+      <div class="carousel-inner">
+
+        <% for (let i = 0; i < randomSlides.length; i += 5) { %>
+          <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+            <div class="d-flex justify-content-center gap-4 flex-wrap">
+              <% randomSlides.slice(i, i + 5).forEach((product, index) => { %>
+                <a href="/product/<%= product._id %>" class="text-decoration-none text-dark">
+                <div class="product-card <%= index === 2 ? 'center-card' : 'side-card' %>">
+                  <img src="<%= product.productImage[0] %>" alt="<%= product.productName %>" />
+                </div>
+                </a>
+              <% }); %>
+            </div>
+          </div>
+         
+
+        <% } %>
       </div>
 
       <!-- Slide 2 -->
-      <div class="carousel-item">
-        <div class="d-flex justify-content-center gap-4 flex-wrap">
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/11/17/2c/11172cf46f2ab1e806297ed4b71a4f01.jpg" alt="Joker" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/c6/dc/52/c6dc52deb23de94992da0f4b85d6f16b.jpg" alt="Doctor Strange" /></div>
-          <div class="product-card center-card"><img src="https://i.pinimg.com/736x/ea/7c/b1/ea7cb1ffcb41b32a455dbc13a32e70e8.jpg" alt="Superman" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/25/d9/eb/25d9eb99eee23980140730cf06bdb8ed.jpg" alt="Batman" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/ed/1a/83/ed1a834abd8fd1e106390e793a9aaa2d.jpg" alt="Black Panther" /></div>
-        </div>
-      </div>
+       <!-- Carousel Inner -->
+
+
+      
 
       <!-- Slide 3 -->
-      <div class="carousel-item">
-        <div class="d-flex justify-content-center gap-4 flex-wrap">
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/ed/1a/83/ed1a834abd8fd1e106390e793a9aaa2d.jpg" alt="Black Panther" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/ea/7c/b1/ea7cb1ffcb41b32a455dbc13a32e70e8.jpg" alt="Superman" /></div>
-          <div class="product-card center-card"><img src="https://i.pinimg.com/736x/11/17/2c/11172cf46f2ab1e806297ed4b71a4f01.jpg" alt="Joker" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/c6/dc/52/c6dc52deb23de94992da0f4b85d6f16b.jpg" alt="Doctor Strange" /></div>
-          <div class="product-card side-card"><img src="https://i.pinimg.com/736x/25/d9/eb/25d9eb99eee23980140730cf06bdb8ed.jpg" alt="Batman" /></div>
-        </div>
-      </div>
+     
 
     </div>
 
@@ -81,29 +120,35 @@
       </div>
 
       <!-- Right Side: Marvel Logo, Text, Button -->
-      <div class="col-md-6 text-center text-md-start">
+      <!-- new created div -->
+        <div class="col-md-6 text-center text-md-start">
+  <!-- Background Wrapper -->
+  <div class="p-4 rounded-4" style="background-color: rgb(41 102 196 / 80%)">
+    
+    <!-- 🔧 Marvel Logo — Adjust size or margin below -->
+    <img src="https://i.pinimg.com/736x/16/40/40/1640404a96a2fc82221a9b4758a31ec0.jpg" 
+         alt="Marvel Logo" 
+         class="marvel-logo mb-3" />
 
-        <!-- 🔧 Marvel Logo — Adjust size or margin below -->
-        <img src="https://i.pinimg.com/736x/16/40/40/1640404a96a2fc82221a9b4758a31ec0.jpg" 
-             alt="Marvel Logo" 
-             class="marvel-logo mb-3" />
+    <!-- 🔧 Headline Text -->
+    <h2 class="marvel-title mb-3 text-white">
+      Bring Home Your Favorite Marvel<br>
+      <span>Heroes & Villains!!</span>
+    </h2>
 
-        <!-- 🔧 Headline Text -->
-        <h2 class="marvel-title mb-3">
-          Bring Home Your Favorite Marvel<br>
-          <span class="">Heroes & Villains!!</span>
-        </h2>
+    <!-- 🔧 Description -->
+    <p class="marvel-description mb-4 text-white">
+      Every detail of these officially licensed Marvel action figures is crafted to perfection,
+      from Iron Man’s repulsor-beams to Spider-Man’s dynamic poses. Whether you're a collector,
+      fan, or gifter, these figures are a must-have for any Marvel enthusiast.
+    </p>
 
-        <!-- 🔧 Description -->
-        <p class="marvel-description mb-4">
-          Every detail of these officially licensed Marvel action figures is crafted to perfection,
-          from Iron Man’s repulsor-beams to Spider-Man’s dynamic poses. Whether you're a collector,
-          fan, or gifter, these figures are a must-have for any Marvel enthusiast.
-        </p>
+    <!-- 🔧 Button -->
+    <a href="/shop" class="btn btn-light px-4 py-2">Shop Now</a>
 
-        <!-- 🔧 Button -->
-        <a href="#" class="btn btn-dark px-4 py-2">Shop Now</a>
-      </div>
+  </div>
+</div>
+
 
     </div>
   </div>
@@ -116,27 +161,32 @@
 <section class="dc-section d-flex align-items-center py-5 text-white">
   <div class="container d-flex flex-wrap justify-content-between align-items-center">
 
-    <!-- 📝 Left: Logo + Text -->
-    <div class="dc-text col-md-6 text-center text-md-start mb-4 mb-md-0">
-      <!-- DC Logo (🛠️ Customize position and size in CSS) -->
-      <img src="https://i.pinimg.com/736x/a0/34/e8/a034e83a560bacdc8ff85a2a304558b6.jpg" class="dc-logo mb-3" alt="DC Logo" />
+     <!-- new created div -->
+    <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
+  <!-- Background Wrapper -->
+  <div class="p-4 rounded-4" style="background-color:rgb(41 102 196 / 80%)">
+    
+    <!-- DC Logo -->
+    <img src="https://i.pinimg.com/736x/a0/34/e8/a034e83a560bacdc8ff85a2a304558b6.jpg" class="dc-logo mb-3" alt="DC Logo" />
 
-      <!-- Quote -->
-      <h2 class="fw-bold mb-3">
-        "From Gotham's Shadows to Cosmic<br>
-        Battles – Own DC’s Finest!"
-      </h2>
+    <!-- Quote -->
+    <h2 class="fw-bold mb-3 text-white">
+      "From Gotham's Shadows to Cosmic<br>
+      Battles – Own DC’s Finest!"
+    </h2>
 
-      <!-- Description -->
-      <p class="mb-4">
-        These officially licensed DC action figures capture every heroic detail—<br>
-        Batman’s cape texture, Superman’s iconic S-shield, and Harley Quinn’s mischievous grin.<br>
-        Designed for collectors, fans, and future legends, these figures are your gateway to the DC Multiverse.
-      </p>
+    <!-- Description -->
+    <p class="mb-4 text-white">
+      These officially licensed DC action figures capture every heroic detail—<br>
+      Batman’s cape texture, Superman’s iconic S-shield, and Harley Quinn’s mischievous grin.<br>
+      Designed for collectors, fans, and future legends, these figures are your gateway to the DC Multiverse.
+    </p>
 
-      <!-- CTA Button -->
-      <a href="#" class="btn btn-dark px-4 py-2">Shop Now</a>
-    </div>
+    <!-- CTA Button -->
+    <a href="/shop" class="btn btn-light px-4 py-2">Shop Now</a>
+
+  </div>
+</div>
 
     <!-- 🖼️ Right: DC Figures Image -->
     <div class="dc-image col-md-6 text-center">
@@ -165,7 +215,7 @@
         <p class="anime-tagline mb-4">MAKES ME HAPPY WHEN NO ONE ELSE DOES</p>
 
         <!-- 🔘 Join Button -->
-        <a href="#" class="btn btn-dark px-4 py-2">Join the Community</a>
+        <a href="/shop" class="btn btn-dark px-4 py-2">Join the Community</a>
       </div>
 
       <!-- 📸 Right Image (Luffy) -->
@@ -181,15 +231,27 @@
 
 <!-- what are yu seeking -->
 
-<section class="seeking-section d-flex align-items-center justify-content-center text-center">
+<!-- <section class="seeking-section d-flex align-items-center justify-content-center text-center">
   <div class="seeking-text">
-    <!-- ✏️ Customize text style here -->
+    
     <h2>
       What Are You <span class="seeking-highlight">Seeking Today?</span>
     </h2>
   </div>
-</section>
+</section> -->
 
+<!-- <section class="seeking-section d-flex align-items-center justify-content-center text-center py-5 position-relative">
+  <div class="seeking-overlay"></div>
+  <div class="seeking-text position-relative z-2">
+    <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">
+      What Are You <span class="seeking-highlight">Seeking Today?</span>
+    </h2>
+    <p class="fs-5 text-light animate__animated animate__fadeInUp animate__delay-1s">
+      Uncover treasures from the realms of <strong>Anime</strong>, <strong>Marvel</strong>, and <strong>DC</strong> — handpicked for every hero and otaku.
+    </p>
+    
+  </div>
+</section> -->
 
 
 <!-- next is card secction  -->
@@ -204,40 +266,24 @@
     <!-- 🧃 Product Cards -->
     <div class="row justify-content-center g-4">
 
-      <!-- 📦 Product Card 1 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/97/03/6a/97036a3971a4d376bba29778d075ce43.jpg" class="img-fluid mb-3" alt="Iron Man">
-          <h5 class="mb-1">Iron Man</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.5</p>
-        </div>
-      </div>
+     
+      <!-- Marvel Cards -->
+        <% marvel.forEach(product => { %>
+          <div class="col-12 col-sm-6 col-md-3">
+            <a href="/product/<%= product._id %>" class="text-decoration-none text-dark"  >
+            <div class="hero-product-card p-3 text-center">
+              <img src="<%= product.productImage[0] %>" class="img-fluid mb-3" alt="<%= product.productName %>">
+              <h5 class="mb-1"><%= product.productName %></h5>
+              <p class="price mb-0"><strong>₹<%= product.salePrice %></strong></p>
+              <p class="rating mb-0">⭐ <%= product.rating %></p>
+            </div>
+            </a>
+          </div>
+        <% }); %>
 
-      <!-- 📦 Product Card 2 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/25/d9/eb/25d9eb99eee23980140730cf06bdb8ed.jpg" class="img-fluid mb-3" alt="Captain America">
-          <h5 class="mb-1">Captain America</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.6</p>
-        </div>
-      </div>
-
-      <!-- 📦 Product Card 3 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/8b/2e/15/8b2e1517070497efa9a4306cb011e05f.jpg" class="img-fluid mb-3" alt="Spiderman">
-          <h5 class="mb-1">Spiderman</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.7</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 📍 View All Button -->
+    <!--  View All Button -->
     <div class="mt-4">
-      <a href="#" class="btn btn-dark px-4 py-2">View All</a>
+      <a href="/shop" class="btn btn-dark px-4 py-2">View All</a>
     </div>
 
   </div>
@@ -253,43 +299,29 @@
     <div class="row justify-content-center g-4">
 
       <!-- 📦 Product Card 1 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/97/03/6a/97036a3971a4d376bba29778d075ce43.jpg" class="img-fluid mb-3" alt="Iron Man">
-          <h5 class="mb-1">Iron Man</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.5</p>
-        </div>
-      </div>
+      <!--dc Cards -->
+        <% dc.forEach(product => { %>
+          <div class="col-12 col-sm-6 col-md-3">
+            <a href="/product/<%= product._id %>" class="text-decoration-none text-dark"  >
+            <div class="hero-product-card p-3 text-center">
+              <img src="<%= product.productImage[0] %>" class="img-fluid mb-3" alt="<%= product.productName %>">
+              <h5 class="mb-1"><%= product.productName %></h5>
+              <p class="price mb-0"><strong>₹<%= product.salePrice %></strong></p>
+              <p class="rating mb-0">⭐ <%= product.rating %></p>
+            </div>
+          </a>
+          </div>
+        <% }); %>
 
-      <!-- 📦 Product Card 2 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/25/d9/eb/25d9eb99eee23980140730cf06bdb8ed.jpg" class="img-fluid mb-3" alt="Captain America">
-          <h5 class="mb-1">Captain America</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.6</p>
-        </div>
-      </div>
-
-      <!-- 📦 Product Card 3 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/8b/2e/15/8b2e1517070497efa9a4306cb011e05f.jpg" class="img-fluid mb-3" alt="Spiderman">
-          <h5 class="mb-1">Spiderman</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.7</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 📍 View All Button -->
+    <!--  View All Button -->
     <div class="mt-4">
-      <a href="#" class="btn btn-dark px-4 py-2">View All</a>
+      <a href="/shop" class="btn btn-dark px-4 py-2">View All</a>
     </div>
 
   </div>
 </section>
+
+
 <!-- caard anime  -->
  <section class="hero-products-section3 py-5">
   <div class="container text-center">
@@ -300,40 +332,27 @@
     <!-- 🧃 Product Cards -->
     <div class="row justify-content-center g-4">
 
-      <!-- 📦 Product Card 1 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/97/03/6a/97036a3971a4d376bba29778d075ce43.jpg" class="img-fluid mb-3" alt="Iron Man">
-          <h5 class="mb-1">Iron Man</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.5</p>
-        </div>
-      </div>
+     
+        <% anime.forEach(product => { %>
+          <div class="col-12 col-sm-6 col-md-3">
+            <a href="/product/<%= product._id %>" class="text-decoration-none text-dark">
+            <div class="hero-product-card p-3 text-center">
+              <img src="<%= product.productImage[0] %>" class="img-fluid mb-3" alt="<%= product.productName %>">
+              <h5 class="mb-1"><%= product.productName %></h5>
+              <p class="price mb-0"><strong>₹<%= product.salePrice %></strong></p>
+              <p class="rating mb-0">⭐ <%= product.rating %></p>
+              </a>
+            </div>
+          </div>
+        <% }); %>
 
-      <!-- 📦 Product Card 2 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/25/d9/eb/25d9eb99eee23980140730cf06bdb8ed.jpg" class="img-fluid mb-3" alt="Captain America">
-          <h5 class="mb-1">Captain America</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.6</p>
-        </div>
-      </div>
 
-      <!-- 📦 Product Card 3 -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="hero-product-card p-3 text-center">
-          <img src="https://i.pinimg.com/736x/8b/2e/15/8b2e1517070497efa9a4306cb011e05f.jpg" class="img-fluid mb-3" alt="Spiderman">
-          <h5 class="mb-1">Spiderman</h5>
-          <p class="price mb-0"><strong>₹4,499</strong> <del>₹5,499</del></p>
-          <p class="rating mb-0">⭐ 4.7</p>
-        </div>
-      </div>
-    </div>
+      
 
+     
     <!-- 📍 View All Button -->
     <div class="mt-4">
-      <a href="#" class="btn btn-dark px-4 py-2">View All</a>
+      <a href="/shop" class="btn btn-dark px-4 py-2">View All</a>
     </div>
 
   </div>
@@ -393,4 +412,3 @@
 </section>
 
 
- <%- include('../partials/user/footer') %>

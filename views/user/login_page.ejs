@@ -125,18 +125,26 @@
       </div>
       <div class="mb-2 text-start">
         <label>Password:</label>
-        <input type="password" name="password" class="form-control" required>
+        <input type="password" name="password" class="form-control" autocomplete="off" required>
       </div>
       <div class="forgot-password">
-        <a href="#">Forgot password?</a>
+        <a href="/find-accountPage">Forgot password?</a>
       </div>
       <button type="submit" class="continue-btn">CONTINUE</button>
       <div class="separator">or</div>
-      <button type="button" class="google-btn">
-        <img src="https://i.pinimg.com/736x/60/41/99/604199df880fb029291ddd7c382e828b.jpg" alt="Google Logo">
-        Continue with Google
-      </button>
+      <a href="/auth/google" style="text-decoration: none;">
+  <button type="button" class="google-btn">
+    <img src="https://i.pinimg.com/736x/60/41/99/604199df880fb029291ddd7c382e828b.jpg" alt="Google Logo">
+    Continue with Google
+  </button>
+</a>
+
     </form>
+
+      <div class="bottom-text">
+      Don’t have an account yet?? <a href="/signup"  style="color:yellow; ">
+        <br>Create One now...!</a>
+    </div>
   </div>
 
 </body>
@@ -147,12 +155,16 @@
   function login() {
     const email = document.querySelector('input[name="email"]').value;
     const password = document.querySelector('input[name="password"]').value;
-    console.log("Here")
+  
   $.ajax({
   type: "POST",
   url: "/login",
   data: { email, password },
   success: function (response) {
+ 
+
+  
+    
     if (response.success) {
       Swal.fire({
         icon: "success",
@@ -171,14 +183,15 @@
       });
     }
   },
-  error: function (xhr) {
-    // Handle 400 response here (wrong OTP)
-    if (xhr.status === 400) {
-      const res = JSON.parse(xhr.responseText);
+ error: function (xhr) {
+ 
+  try {
+    const res = JSON.parse(xhr.responseText);
+    if (xhr.status === 400 || xhr.status === 403) {
       Swal.fire({
         icon: "error",
         title: "Login Error",
-        text: res.message || "Password not Matching"
+        text: res.message || "Login failed"
       });
     } else {
       Swal.fire({
@@ -187,9 +200,17 @@
         text: "Please try again later"
       });
     }
+  } catch (err) {
+    console.error("JSON parse error:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Unexpected Error",
+      text: "Something went wrong. Please try again."
+    });
   }
+}
 });
 
-    return false; // Prevent default form submission
+    return false; 
   }
 </script>
