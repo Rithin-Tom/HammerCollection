@@ -1,0 +1,75 @@
+
+
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body style="
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('https://i.pinimg.com/736x/fa/4a/fa/fa4afaac480367b0867308624a84fda9.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+">
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    
+     <%- include('../partials/user/sideBar', { user: user }) %>
+
+    <!-- Main Content -->
+    <div class="col-12 col-md-9 d-flex justify-content-center align-items-center p-4">
+      <div class="bg-white rounded-4 shadow p-4" style="width: 100%; max-width: 700px; border: 40px solid #1b3954;">
+
+        <h4 class="text-center mb-4">Add New Address</h4>
+
+        <form>
+          <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="fullName" placeholder="Enter your full name">
+          </div>
+
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="phone" placeholder="Enter phone number">
+          </div>
+
+          <div class="mb-3">
+            <label for="address" class="form-label">Address Line</label>
+            <textarea class="form-control" id="address" rows="3" placeholder="Enter your address"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <input type="text" class="form-control" id="city" placeholder="City name">
+          </div>
+
+          <div class="mb-3">
+            <label for="state" class="form-label">State</label>
+            <input type="text" class="form-control" id="state" placeholder="State">
+          </div>
+
+          <div class="mb-3">
+            <label for="pincode" class="form-label">Pincode</label>
+            <input type="text" class="form-control" id="pincode" placeholder="Pincode">
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-dark">Save Address</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+

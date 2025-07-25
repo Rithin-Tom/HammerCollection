@@ -267,15 +267,14 @@
                     <td>
                        <div class="btn-group btn-group-sm">
                           <!-- Eye or Eye-Slash Button -->
-                          ${product.isDeleted 
-
-                            ? `<button class="btn btn-outline-success btn-sm" onclick="toggleBlockProduct('${product._id}', false)" title="Unblock">
-                                 <i class="fas fa-eye"></i>
-                               </button>`
-                            : `<button class="btn btn-outline-warning btn-sm" onclick="toggleBlockProduct('${product._id}', true)" title="Block">
-                                 <i class="fas fa-eye-slash"></i>
-                               </button>`
-                          }
+                         ${product.isDeleted 
+  ? `<button class="btn btn-outline-success btn-sm fw-bold" onclick="toggleBlockProduct('${product._id}', false)" title="List Product">
+        List
+     </button>`
+  : `<button class="btn btn-outline-danger btn-sm fw-bold" onclick="toggleBlockProduct('${product._id}', true)" title="Unlist Product">
+        Unlist
+     </button>`
+}
                            
                           <!-- Edit Button -->
                           <button class="btn btn-outline-secondary btn-sm" onclick="editProduct('${product._id}')" title="Edit">
@@ -385,6 +384,7 @@
             if (product) {
                 product.status = 'draft';
                 renderProducts();
+                
                 alert(`Product "${product.productName}" has been unpublished`);
             }
         }

@@ -4,6 +4,7 @@ const userMiddleware = require('../../middlewares/userMiddleware');
 const userController = require("../../controllers/user/userController")
 const userProductPage = require("../../controllers/user/userProductPage");
 const { loadDetails } = require('../../controllers/user/productDetails');
+const userProfile =require('../../controllers/user/userProfile')
 const passport = require('passport');
 
 
@@ -28,6 +29,17 @@ router.post('/filter-products',userMiddleware.checkUserExists,userProductPage.fi
 
 router.get('/product/:id',loadDetails)
 
+
+// userProfile
+
+router.get('/profile',userProfile.loadProfile)
+router.get('/profile/edit/:id',userProfile.editProfile)
+router.put('/profile/',userProfile.updateProfile)
+
+router.get('/profile/addressBook',userProfile.loadAddressBook)
+router.get('/profile/addAddress',userProfile.loadAddAddress)
+
+//login
 
 
 router.get("/login",userMiddleware.loggedOut,userController.loadLoginpage)

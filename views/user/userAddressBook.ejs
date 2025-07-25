@@ -1,0 +1,96 @@
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('https://i.pinimg.com/736x/fa/4a/fa/fa4afaac480367b0867308624a84fda9.jpg');
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+    }
+    .main-card {
+      background-color: white;
+      border-radius: 25px;
+      border: 40px solid rgb(27, 57, 84);
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+    .address-card {
+      border: 2px solid #ccc;
+      border-radius: 15px;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+     <%- include('../partials/user/sideBar', { user: user }) %>
+  
+
+    <!-- Main Content -->
+    <div class="col-12 col-md-9 p-4">
+      <div class="main-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">My Addresses</h4>
+          <a href="/profile/addAddress" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i> Add New Address
+          </a>
+        </div>
+
+        <!-- Address Card 1 -->
+        <div class="mb-4">
+          <div class="address-card">
+            <h6>John Doe</h6>
+            <p class="mb-1">123, Sunset Villa, Palm Street</p>
+            <p class="mb-1">Kochi, Kerala - 682001</p>
+            <p class="mb-1">Phone: +91 9876543210</p>
+
+            <div class="position-absolute top-0 end-0 m-2">
+              <a href="edit-address.html" class="btn btn-sm btn-outline-primary me-2">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <button class="btn btn-sm btn-outline-danger" onclick="confirm('Are you sure you want to delete this address?')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Card 2 -->
+        <div class="mb-4">
+          <div class="address-card">
+            <h6>Jane Smith</h6>
+            <p class="mb-1">Flat 45B, Green Apartments</p>
+            <p class="mb-1">Thrissur, Kerala - 680004</p>
+            <p class="mb-1">Phone: +91 9123456789</p>
+
+            <div class="position-absolute top-0 end-0 m-2">
+              <a href="edit-address.html" class="btn btn-sm btn-outline-primary me-2">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <button class="btn btn-sm btn-outline-danger" onclick="confirm('Are you sure you want to delete this address?')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+</body>
