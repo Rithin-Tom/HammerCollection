@@ -123,7 +123,7 @@ async function findAccount(event) {
 
   try {
     const email = document.getElementById('email').value;
-    console.log(email);
+    
 
     const response = await fetch('/find-account', {
       method: 'POST',

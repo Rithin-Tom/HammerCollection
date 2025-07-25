@@ -25,7 +25,9 @@ const loadDetails = async(req,res)=>{
   } catch (error) {
 
        console.log("error in load  loadDetails",error.message)
-        res.status(500).send("server error ,loadDetails")
+        res.status(404)
+        res.render('user/error',{user:null,noHeader: true, noFooter: true })
+        
 
   }
 }
