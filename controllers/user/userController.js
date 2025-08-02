@@ -134,7 +134,7 @@ const login = async (req, res) => {
        }
         if(user.isBlocked){
        
-          
+            
            return res.status(403).json({ success: false, message: "User is blocked by admin" });
         }
 
@@ -237,6 +237,8 @@ console.log("Stored OTP:", req.session.userOtp);
       } else if (purpose === "forgot-password") {
        
         return res.json({ success: true, redirectUrl: `/reset-password?email=${encodeURIComponent(email)}` });
+      }else if(purpose ==="change-email"){
+        return res.json({ success: true, redirectUrl: `/profile/edit?email=${encodeURIComponent(email)}` });
       }
 
     } else {
@@ -337,6 +339,8 @@ const resetPassword = async (req,res) => {
   try {
     res.render('user/resetPassword',{ user: req.session.user || null,noHeader: true,noFooter: true,})
   } catch (error) {
+
+
     
   }
   
@@ -376,6 +380,15 @@ const saveRestPassword = async (req,res) => {
   
 }
 
+const loadCart = async (req,res) => {
+  try {
+    res.send("hello ")
+  } catch (error) {
+    
+  }
+  
+}
+
 
 
 module.exports={
@@ -392,7 +405,8 @@ module.exports={
     resetPassword,
     loadfindAccount,
     findAccount,
-    saveRestPassword
+    saveRestPassword,
+    loadCart
 
     
 }

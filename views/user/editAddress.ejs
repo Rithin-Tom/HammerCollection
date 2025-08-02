@@ -49,7 +49,7 @@
     <label for="addressType" class="form-label">Address Type</label>
     <select class="form-select" id="addressType" >
       
-      <option value="">Select type</option>
+      <option value="<%= userAddress.addressType %>"><%= userAddress.addressType %></option>
       <option value="Home">Home</option>
       <option value="Work">Work</option>
       <option value="Other">Other</option>
@@ -59,24 +59,24 @@
 
   <div class="mb-3">
     <label for="fullName" class="form-label">Full Name</label>
-    <input type="text" class="form-control" id="fullName" placeholder="Enter your full name">
+    <input type="text" class="form-control" id="fullName"  value="<%= userAddress.name %>" placeholder="Enter full name">
     <div id="error2" class="error-message" ></div>
   </div>
 
   <div class="mb-3">
     <label for="phone" class="form-label">Phone Number</label>
-    <input type="text" class="form-control" id="phone" placeholder="Enter phone number">
+    <input type="text" class="form-control" id="phone" value="<%= userAddress.phone %>"   placeholder="Enter phone number">
     <div id="error3" class="error-message" ></div>
   </div>
   <div class="mb-3">
     <label for="Phone" class="form-label">alternate Phone Number</label>
-    <input type="text" class="form-control" id="altPhone" placeholder="Enter phone number">
+    <input type="text" class="form-control" id="altPhone" value="<%= userAddress.altPhone %>"  placeholder="Enter phone number">
     <div id="error9" class="error-message" ></div>
   </div>
 
   <div class="mb-3">
     <label for="address" class="form-label">Address Line</label>
-    <textarea class="form-control" id="address" rows="3" placeholder="Enter your address"></textarea>
+    <textarea class="form-control" id="address" rows="3"  placeholder="Enter your address"><%= userAddress.addressLine %></textarea>
     <div id="error4" class="error-message" ></div>
   </div>
 
@@ -84,7 +84,7 @@
   <div class="mb-3">
     <label for="state" class="form-label">State</label>
     <select class="form-select" id="state" onchange="loadCities()" >
-      <option value="">Select state</option>
+      <option value="<%= userAddress.state %>"><%= userAddress.state %></option>
       <option value="Kerala">Kerala</option>
       <option value="Tamil Nadu">Tamil Nadu</option>
       <option value="Karnataka">Karnataka</option>
@@ -96,20 +96,20 @@
   <div class="mb-3">
     <label for="city" class="form-label">City</label>
     <select class="form-select" id="city" >
-      <option value="">Select city</option>
+      <option value="<%= userAddress.city %>"><%= userAddress.city %></option>
     </select>
     <div id="error6" class="error-message" ></div>
   </div>
 
    <div class="mb-3">
     <label for="landMark" class="form-label">landMark</label>
-    <input type="text" class="form-control" id="landMark" placeholder="landMark">
+    <input type="text" class="form-control" id="landMark" value="<%= userAddress.landMark%>" placeholder="landMark">
     <div id="error8" class="error-message" ></div>
   </div>
 
   <div class="mb-3">
     <label for="pincode" class="form-label">Pincode</label>
-    <input type="text" class="form-control" id="pincode" placeholder="Pincode">
+    <input type="text" class="form-control" id="pincode" value="<%= userAddress.pincode %>" placeholder="Pincode">
     <div id="error7" class="error-message" ></div>
   </div>
 
@@ -263,7 +263,7 @@
 
     try {
 
-      const res = await fetch('/profile/addAddress',{
+      const res = await fetch('/profile/editAddress/<%= index %>',{
         method:"PUT",
         headers:{ 'Content-Type': 'application/json'},
         body:JSON.stringify({
@@ -282,7 +282,7 @@
 
       const result = await res.json()
 
-     
+      
 
       if(!result.success){
          Swal.fire({

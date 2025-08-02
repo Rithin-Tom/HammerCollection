@@ -4,7 +4,7 @@ const {Schema} = mongoose;
 
 
 const addressSchema = new Schema({
-    userId:{
+    user:{
         type:Schema.Types.ObjectId,
         ref:"User",
         require:true,
@@ -27,9 +27,9 @@ const addressSchema = new Schema({
             type:String,
             required:true
         },
-        sate:{
-            type:String,
-            required:true
+        state: {
+            type: String,
+            required: true
         },
         pincode:{
             type:Number,
@@ -40,6 +40,10 @@ const addressSchema = new Schema({
             required:true
         },
         altPhone:{
+            type:String,
+            required:true
+        },
+        addressLine:{
             type:String,
             required:true
         }

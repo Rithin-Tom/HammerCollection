@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose
 
+
+
 const cartItemSchema = new Schema({
   productId: {
     type: Schema.Types.ObjectId,
-    ref: 'Product', // Assuming you have a Product model
+    ref: 'Product', 
     required: true,
   },
   quantity: {
@@ -16,29 +18,25 @@ const cartItemSchema = new Schema({
     type: Number,
     required: true,
   },
-  totalPrice: {
+  total: {
     type: Number,
-    default: 0,
+    required: true,
   },
-  status:{
-    type:String,
-    default:"placed"
-  },
-  cancellationReason:{
-    type:String,
-    default:"none"
-  }
 });
 
 const cartSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User', // Assuming you have a User model
+    ref: 'User',
     required: true,
-    unique: true, // one cart per user
+    unique: true, 
   },
   items: [cartItemSchema],
   totalItems: {
+    type: Number,
+    default: 0,
+  },
+  totalPrice: {
     type: Number,
     default: 0,
   },
@@ -48,6 +46,15 @@ const cartSchema = new Schema({
     default: Date.now,
   },
 });
+
+cartSchema.pre('save',function(next){
+  this.totalItems = this.items.reduce((sum,items)=>sum +=items.quantity,0)
+  this.totalPrice = this.items.reduce((sum,items)=>{
+    return sum + items.quantity *items.price
+  },0)
+  this.updatedAt = new Date();
+  next();
+})
 
 const Cart =mongoose.model('Cart', cartSchema);
 module.exports = Cart;

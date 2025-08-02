@@ -150,6 +150,7 @@
             <button class="btn btn-outline-light btn-sm me-3" onclick="increaseQty()">+</button>
 
             <button class="btn btn-dark me-2">Add to Cart</button>
+            <button onclick="buyNow('<%=product._id %>')"  class="btn btn-dark me-2">Buy Now</button>
             <button class="btn btn-outline-light"><i class="bi bi-heart"></i></button>
           </div>
 
@@ -285,6 +286,24 @@ const image = document.getElementById("mainProductImage");
     image.style.transform = "scale(1)";
     image.style.transformOrigin = "center";
   });
+
+
+
+  async function buyNow(productId) {
+    try {
+      
+      const res = await fetch('/checkout',{
+        method:"POSt",
+        headers:{'content-type':'application/json'},
+      })
+
+
+    } catch (error) {
+      
+    }
+    
+  }
+
 
 
 </script>

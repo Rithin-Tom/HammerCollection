@@ -1,6 +1,8 @@
 
 const User = require("../../models/userSchema");
+const Address = require('../../models/addressSchema')
 const bcrypt = require("bcrypt");
+const { generateOtp, sendVerificationEmail } = require("../../utils/otpServices");
 
 
 const loadProfile = async(req,res)=>{
@@ -28,6 +30,7 @@ const editProfile = async (req,res) => {
     } catch (error) {
 
 
+
         
     }    
 }
@@ -40,11 +43,11 @@ const updateProfile =async (req,res) => {
         let {fullName,phoneNumber,emailAddress,currentPassword,newPassword}=req.body
         const id= userId._id
 
-        console.log(req.body);
+       
         
 
         let user =await User.findById(id)
-         console.log(user);
+         
 
         if(!user){
              return res.status(401).json({ message: 'user not found' , success: false })
@@ -57,7 +60,7 @@ const updateProfile =async (req,res) => {
             }
             }
 
-            const isMatch = await bcrypt.compare(currentPassword,user.password)
+            const isMatch =  bcrypt.compare(currentPassword,user.password)
 
                if(!isMatch){
                 return res.status(401).json({message:"Incorrect current password ",success:false})
@@ -96,39 +99,60 @@ const updateProfile =async (req,res) => {
 
 
 
-// 
-
-
-const loadAddressBook = async (req,res)=> {
-
-    try {
-        let userId = req.session.user._id
-        const user = await User.findById(userId)
-       
-        res.render('user/userAddressBook',{user:user})
-    } catch (error) {
-        
-    }
-
     
-}
-const loadAddAddress = async (req,res) => {
-    try {
-        let userId = req.session.user._id
-        const user = await User.findById(userId)
+
+      const sendOtp = async (req,res) => {
        
-        res.render('user/addAddress',{user:user})
-        
-    } catch (error) {
-        
-    }
-    
-}
+       try {
+           const { email } = req.body;
+   
+           if (!email) {
+             return res.status(400).json({ success: false, message: 'Email is required.' });
+           }
+           const user = await User.findOne({ email });
+               if (!user) {
+                 return res.status(400).json({ success: false, message: 'Account not found.', redirectUrl: '/signup' });
+               }
+           
+               const otp = generateOtp()
+               const emailSend = await sendVerificationEmail(email,otp)
+   
+                if (!emailSend) {
+         return res.status(500).json({ success: false, message: 'Failed to send OTP email.' });
+       }
+   
+         req.session.userOtp = otp;
+         req.session.otpEmail = email;
+         req.session.otpPurpose = "change-email";
+   
+       console.log("OTP for change email:", otp);
+       return res.status(200).json({
+         success: true,
+         message: 'Account found! OTP sent.',
+         redirectUrl: `/verify-otp?email=${encodeURIComponent(email)}&purpose=change-email`
+       });
+   
+       } catch (error) {
+           console.error('FindAccount Error:', error);
+       return res.status(500).json({ success: false, message: 'Server error' });
+       }
+       
+      }
+   
+
+
+
+
+
+
+
+
+
+
 
 module.exports={
     loadProfile,
     editProfile,
     updateProfile,
-    loadAddressBook,
-    loadAddAddress
+    sendOtp
 }

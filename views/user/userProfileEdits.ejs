@@ -49,14 +49,34 @@
         </div>
 
         <div class="mb-3">
-          <label for="emailAddress" class="form-label">Email</label>
-          <input type="text" id="emailAddress" class="form-control" value="<%= user.email %>">
-          <div id="error2" class="error-message" ></div>
-        </div>
+  <label for="emailAddress" class="form-label">Email</label>
+  <div class="input-group">
+    <input 
+      type="text" 
+      id="emailAddress" 
+      name="email" 
+      class="form-control" 
+      placeholder="" 
+      value="<%= user.email %>"
+      disabled
+    >
+    <button 
+      type="button" 
+      class="btn btn-outline-secondary btn-sm" 
+      onclick="requestEmailEdit(this)"
+    >
+      Edit
+    </button>
+  </div>
+  <div id="error2" class="error-message"></div>
+</div>
+<!--  -->
+
+        <input type="hidden" id="oldEmailAddress" class="form-control" value="<%= user.email %>">
 
         <div class="mb-3">
           <label for="phoneNumber" class="form-label">Phone Number</label>
-          <input type="text" id="phoneNumber"  placeholder="<%= user.phone ? user. : 'Not added phone number yet!!' %>" class="form-control" value="">
+          <input type="text" id="phoneNumber"  placeholder="<%= user.phone ? user.phone : 'Not added phone number yet!!' %>" class="form-control" value="">
           <div id="error3" class="error-message" ></div>
         </div>
 
@@ -112,14 +132,75 @@
   section.style.display = section.style.display === 'none' ? 'block' : 'none';
 }
 
-  document.getElementById('editProfile').addEventListener('submit', updateProfile);
+async function requestEmailEdit(button) {
+  try {
+    const response = await fetch('/profile/email/edit-request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: '<%= user.email %>' }) // send user ID if needed
+    });
+    const email = '<%= user.email %>'
+
+    const data = await response.json();
+
+    
+      
+  
+    if(data.success) {
+
+      window.location.href=data.redirectUrl
+     
+      //
+      // emailInput.disabled = false;
+      // emailInput.focus();
+
+      // button.textContent = "Cancel";
+      // button.classList.remove("btn-outline-secondary");
+      // button.classList.add("btn-outline-danger");
+      // button.onclick = () => {
+      //   emailInput.disabled = true;
+      //   emailInput.value = document.getElementById('oldEmailAddress').value;
+      //   button.textContent = "Edit";
+      //   button.classList.remove("btn-outline-danger");
+      //   button.classList.add("btn-outline-secondary");
+      //   button.onclick = () => requestEmailEdit(button);
+      // };
+    } else {
+      document.getElementById('error2').textContent = data.message || 'Unable to edit email right now.';
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    document.getElementById('error2').textContent = 'Something went wrong while enabling email edit.';
+  }
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const urlParams = new URLSearchParams(window.location.search);
+  const emailInParams = urlParams.get('email');
+   const emailInput = document.getElementById('emailAddress');
+
+   if(emailInParams && emailInput && emailInput.value===emailInParams){
+    emailInput.removeAttribute('readonly');
+    emailInput.disabled = false;
+      emailInput.focus();
+
+   }
+
+})
+  
+
+
+document.getElementById('editProfile').addEventListener('submit', updateProfile);
   
   async function updateProfile(event) {
 
-const User = <%- JSON.stringify(user) %>;
+    const User = <%- JSON.stringify(user) %>;
 
 
-    console.log(User);
+
+  
     
     
     
@@ -137,6 +218,8 @@ const User = <%- JSON.stringify(user) %>;
     const error5 = document.getElementById("error5");
     const confirmPassword = document.getElementById('confirmPassword')?.value.trim();
     const error6 = document.getElementById("error6");
+
+    
 
 
     const confirmResult = await Swal.fire({
@@ -251,7 +334,6 @@ const User = <%- JSON.stringify(user) %>;
             }
 
                }
-
 
          if (!isValid) return;
 
