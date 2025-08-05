@@ -67,7 +67,7 @@ router.get('/products/nameCheck',adminMiddileWare.loggedIn,productController.che
 router.post('/products/upload-image', upload.single('image'),productController.uploadProductImage);
 router.post('/products/api/create',productController.createProduct);
 router.get('/editProduct/:id',adminMiddileWare.loggedIn,productController.loadeditProducts);
-router.put('/products/api/update/:id',productController.updateProducts);
+router.put('/products/api/update',productController.updateProducts);
 router.delete('/api/products/:id',productController.deleteProduct);
 router.delete('/products/api/delete/:id',productController.deleteProduct);
 router.patch('/api/products/:id/delete-status',productController.deleteStatus);

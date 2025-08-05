@@ -629,6 +629,7 @@
       }
 
       const payload = {
+        productId :PRODUCT_ID,
         productName: name,
         description,
         category, 
@@ -646,7 +647,7 @@
       document.getElementById('product-submit-btn').disabled = true;
 
       try {
-        const res = await fetch(`${BASE_URL}/admin/products/api/update/${PRODUCT_ID}`, {
+        const res = await fetch(`${BASE_URL}/admin/products/api/update`, {
           method: 'PUT',
           headers: { 'Content-type': 'application/json' },
           body: JSON.stringify(payload)

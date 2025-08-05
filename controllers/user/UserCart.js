@@ -6,12 +6,20 @@ const Product = require('../../models/productSchema')
 
 const loadCart = async (req, res) => {
     try {
+
+        if (!req.session.user || !req.session.user._id) {
+      return res.redirect("/login"); 
+    }
         let userId = req.session.user._id
         const user = await User.findById(userId)
-        const cart = await Cart.findOne({ userId: userId }).populate({ path: 'items.productId', populate: { path: "category", populate: { path: "parent" } } })
+        let cart = await Cart.findOne({ userId: userId }).populate({ path: 'items.productId', populate: { path: "category", populate: { path: "parent" } } })
+        if(!cart){
+            cart = null
+        }
 
         res.render('user/userCart', { user: user,cart})
     } catch (error) {
+        console.log('error in load cart',error)
 
     }
 
@@ -62,8 +70,6 @@ const addToCart = async (req, res) => {
             } else {
                 exitingItem.quantity += 1;
                 exitingItem.total = exitingItem.quantity * price;
-                product.quantity -= 1
-                await product.save()
 
             }
         } else {
@@ -73,12 +79,7 @@ const addToCart = async (req, res) => {
                 quantity: quantity,
                 price: product.salePrice,
                 total:product.salePrice        
-            })
-
-            product.quantity -= 1
-            product.status = product.quantity === 0 ? 'sold_out' : 'available';
-
-            await product.save()
+            }) 
             
         }
        
@@ -101,14 +102,23 @@ const updateQuantity =async (req,res) => {
 
           const userId = req.session.user._id;
           const { productId, quantity } = req.body;
+          console.log(quantity)
+          
 
           const cart = await Cart.findOne({userId:userId})
-          let product = await Product.findById({_id:productId})
+          let product = await Product.findById(productId)
 
           if(!cart)return res.status(404).json({success:false,message:'cart not found'})
 
             let items = cart.items.find((items=>items.productId.toString()==productId))
             if(!items)return res.status(404).json({ success: false, message: 'Item not found in cart' });
+
+            if(quantity>5){
+               return res.status(400).json({success:false,message:"You can only add 5 item in a single product"})
+            }
+             if(quantity > product.quantity){
+                return res.status(400).json({success:false,message:`${product.productName} has only  have ${items.quantity} stocks left`})
+             }
 
             let oldQty = items.quantity
             let diff =  quantity - oldQty
@@ -117,20 +127,11 @@ const updateQuantity =async (req,res) => {
                return res.status(400).json({ success: false, message: 'Not enough stock available' });
              }
 
-              product.quantity -= diff;
-
+            
              
               items.quantity = quantity;
              items.total = items.quantity * product.salePrice;
 
-        
-              if (product.quantity === 0) {
-                 product.status = 'sold_out';
-                } else {
-              product.status = 'available';
-                   }
-        
-                await product.save()
 
             await cart.save()
 
