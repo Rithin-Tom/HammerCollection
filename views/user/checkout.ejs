@@ -113,7 +113,7 @@
             <!-- Total -->
             <li class="list-group-item d-flex justify-content-between">
               <strong id="totalItems" >Total (<%= cart.totalItems %>)</strong>
-              <strong id="totalPrice">₹<%= cart.totalPrice %></strong>
+              <strong id="totalPrice">₹<%= cart.totalPrice.toLocaleString('en-IN') %></strong>
             </li>
           </ul>
 
@@ -148,17 +148,24 @@
          <h5 class="fw-bold mb-3">Select Delivery Address</h5>
 
 <!-- Address Dropdown -->
-<div class="mb-3">
+<% if (address) { %>
+  <div class="mb-3">
   <select class="form-select" id="addressSelect" onchange="displaySelectedAddress()">
-    <option value="0">John Doe - 123 Street, Kochi</option>
-    <option value="1">Jane Smith - 456 Avenue, Trivandrum</option>
-  </select>
-</div>
+  <% address.address.forEach((element, index )=> { %>
+    <option value="<%= index %>"><%=element.name %>-<%= element.city %>,<%= element.state %></option>
+  <% }) %>
+   </select>
+ </div>
+<% } %>
+
+   
+
 
 <!-- Address Display Box -->
+
 <div id="addressDisplay" class="address-card">
-  <p class="fw-bold mb-1" id="name">John Doe<br>123 Street, Kochi, Kerala<br>Pin: 682001</p>
-  <p class="mb-1" id="contact">Contact: +91 98765 43210</p>
+  <p class="fw-bold mb-1" id="name"><%= address.address[0].name %><br><%= address.address[0].addressType %>,<%= address.address[0].city %>, <%= address.address[0].state %><br>Pin:<%= address.address[0].pincode %></p>
+  <p class="mb-1" id="contact">Contact:<%= address.address[0].phone %></p>
 </div>
 
 
@@ -192,26 +199,27 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-   const addresses = [
-    {
-      name: "John Doe",
-      address: "123 Street, Kochi, Kerala",
-      pin: "682001",
-      contact: "+91 98765 43210"
-    },
-    {
-      name: "Jane Smith",
-      address: "456 Avenue, Trivandrum",
-      pin: "695001",
-      contact: "+91 90000 12345"
-    }
-  ];
+  const addresses =<%-JSON.stringify(address.address) %>
+  //  const addresses = [
+  //   {
+  //     name: "John Doe",
+  //     address: "123 Street, Kochi, Kerala",
+  //     pin: "682001",
+  //     contact: "+91 98765 43210"
+  //   },
+  //   {
+  //     name: "Jane Smith",
+  //     address: "456 Avenue, Trivandrum",
+  //     pin: "695001",
+  //     contact: "+91 90000 12345"
+  //   }
+  // ];
 
   function displaySelectedAddress() {
     const index = document.getElementById("addressSelect").value;
     const selected = addresses[index];
-    document.getElementById("name").innerHTML = `${selected.name}<br>${selected.address}<br>Pin: ${selected.pin}`;
-    document.getElementById("contact").textContent = `Contact: ${selected.contact}`;
+    document.getElementById("name").innerHTML = `${selected.name}<br>${selected.city},${selected.state}<br>Pin: ${selected.pincode}`;
+    document.getElementById("contact").textContent = `Contact: ${selected.phone}`;
   }
 
 
@@ -243,7 +251,7 @@
         toast: true,
         position: 'top-end',
         icon: 'success',
-        title: 'removed from the  cart!',
+        title: result.message,
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true

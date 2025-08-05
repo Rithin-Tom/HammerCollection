@@ -65,6 +65,10 @@ const userSchema = new Schema ({
             type:Schema.Types.ObjectId,
             ref:"User"
         }],
+        userProfile:{
+            type:[String],
+            required:false
+        },
         searchHistory:[{
             category:{
                 type:Schema.Types.ObjectId,

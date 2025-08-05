@@ -26,7 +26,7 @@
         <h3 class="text-center mb-4">Your Shopping Cart</h3>
 
         <!-- CART ITEM -->
-         <% if ( !cart && cart.items.length==0 ) { %>
+         <% if ( !cart || cart.items?.length==0 ) { %>
           <div class="card mb-3">
           <div class="row g-0 align-items-center">
             <p>Your cart is empty add some....</p>
@@ -57,9 +57,9 @@
         </div>
 
         <div class="col-md-2 text-center">
-          ₹<%= element.price %>
+          <%= '₹' +  element.price.toLocaleString('en-IN') %>
         </div>
-
+ 
         <div class="col-md-2 text-center">
           <button class="btn btn-sm btn-outline-danger" onclick="removeItem('<%= element.productId._id %>')">Remove</button>
         </div>
@@ -75,10 +75,11 @@
         <!-- Repeat the above block for more cart items -->
 
         <!-- Summary -->
-        <div class="mt-4 border-top pt-3">
+         <% if (cart) { %>
+          <div class="mt-4 border-top pt-3">
           <div class="d-flex justify-content-between">
             <span>Subtotal</span>
-            <span id="subTotal" >₹ <%= cart.totalPrice %>  </span>
+            <span id="subTotal" >₹ <%= cart.totalPrice.toLocaleString('en-IN') %>  </span>
           </div>
           <div class="d-flex justify-content-between">
             <span>Shipping</span>
@@ -97,9 +98,37 @@
              
              <% } else { %>
              
-            <p>Total Price: ₹<span id="totalPrice"><%= cart.totalPrice +=140 %></span></p>
+            <p>Total Price: ₹<span id="totalPrice"><%= (cart.totalPrice +=140 ).toLocaleString('en-IN')   %></span></p>
             <% } %>
           </div>
+          
+          <% } else { %>
+
+             <div class="mt-4 border-top pt-3">
+          <div class="d-flex justify-content-between">
+            <span>Subtotal</span>
+            <span  >₹0 </span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Shipping</span>
+            <span>₹50</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Tax</span>
+            <span>₹90</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold">
+            <span>Total</span>
+            <p>Total Items: <span>0</span></p>
+              <p>Total Price: ₹<span >0</span></p> 
+            <p>Total Price: ₹<span >></span></p>
+          
+          </div>
+
+            <% } %>
+          
+        
           <div class="d-grid gap-2 mt-3">
             <a href="/shop" class="btn btn-secondary" style="text-decoration: none; color: white;">← Continue Shopping</a>
             <a href="/checkout" class="btn btn-success" style="text-decoration: none; color: white;">Proceed to Checkout</a>
@@ -127,7 +156,21 @@
       if (action === 'increase' && currentQty < 5) newQty++;
       if (action === 'decrease' && currentQty > 1) newQty--;
 
-      if (newQty === currentQty) return;
+      if (newQty === currentQty) {
+       if (currentQty === 5 && action === 'increase') {
+    Swal.fire({
+         toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: 'You can only add up to 5 items in the cart.',
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true
+    });
+  }
+  return;
+}
+
 
 
       const res = await fetch('/cart/update',{
@@ -152,7 +195,7 @@
           toast: true,
           position: 'top-end',
           icon: 'error',
-          title: 'Out of Stock',
+          title: result.message ||'Out of Stock',
           showConfirmButton: false,
           timer: 1500,
           timerProgressBar: true
@@ -192,7 +235,7 @@
         toast: true,
         position: 'top-end',
         icon: 'success',
-        title: 'removed from the  cart!',
+        title:  result.message,
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true
@@ -205,7 +248,7 @@
        toast: true,
        position: 'top-end',
        icon: 'error',
-       title: data.message ||'Failed to remove from the  cart:',
+       title: result.message ||'Failed to remove from the  cart:',
        showConfirmButton: false,
        timer: 1500,
        timerProgressBar: true

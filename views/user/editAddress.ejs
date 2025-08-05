@@ -193,6 +193,7 @@
       error2.style.display = "block";
       error2.innerHTML = "Please enter your Full Name ";
       isValid =false;
+      return
     }else{
       error2.style.display = "none";
       isValid= true;
@@ -201,6 +202,7 @@
       error3.style.display = "block";
       error3.innerHTML = "Please enter a vaild phone number";
       isValid= false;
+      return
     }else{
       error3.style.display = "none";
       isValid= true;
@@ -209,6 +211,7 @@
       error4.style.display = "block";
       error4.innerHTML = "Please enter  your address";
       isValid= false;
+      return
     }else{
       error4.style.display = "none";
       isValid= true;
@@ -217,14 +220,17 @@
       error5.style.display = "block";
       error5.innerHTML = "Please enter select  your state ";
       isValid= false;
+      return
     }else{
       error5.style.display = "none";
       isValid= true;
+      
     }
      if(city==""){
       error6.style.display = "block";
       error6.innerHTML = "Please enter your city ";
       isValid= false;
+      return
     }else{
       error6.style.display = "none";
       isValid= true;
@@ -233,6 +239,7 @@
     error7.style.display = "block";
     error7.innerHTML = "Please enter a valid 6-digit PIN code";
     isValid = false;
+    return
   }else{
      error7.style.display = "none";
       isValid= true;
@@ -242,6 +249,7 @@
     error8.style.display = "block";
     error8.innerHTML = "Please enter your  landMark";
     isValid = false;
+    return
   }else{
      error8.style.display = "none";
       isValid= true;
@@ -251,6 +259,7 @@
       error9.style.display = "block";
     error9.innerHTML = "Please enter your alternate phone number";
     isValid = false;
+    return
     }else{
       error9.style.display="none"
       isValid=true

@@ -70,10 +70,10 @@ const updateAddress = async (req,res) => {
     }
 
     
-    if (userAddress.address.length >= 3) {
-      const Url = "/profile/addAddress";
-      return res.status(200).json({ success: false, message: "You can only add 3 addresses", Url });
-    }
+    // if (userAddress.address.length >= 3) {
+    //   const Url = "/profile/addAddress";
+    //   return res.status(200).json({ success: false, message: "You can only add 3 addresses", Url });
+    // }
 
     
     userAddress.address.push(newAddress);

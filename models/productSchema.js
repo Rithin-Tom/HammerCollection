@@ -82,5 +82,14 @@ const productSchema = new Schema({
 
 },{timestamps:true});
 
+
+productSchema.pre('save',function (next){
+    if( this.quantity==0){
+        this.status ='sold_out'
+    }else{
+        this.status ='available'
+    }
+})
+
 const Product = mongoose.model("Product",productSchema);
 module.exports = Product;
