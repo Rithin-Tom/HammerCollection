@@ -50,7 +50,7 @@
 
     <!-- Main Content -->
     <div class="col-12 col-md-9 p-4">
-      <div class="main-card">
+      <div class="main-card"  style="border: 40px solid rgb(27 57 84); max-width: 900px; margin: auto;" >
 
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h4 class="mb-0">My Addresses</h4>
@@ -62,7 +62,7 @@
         <!-- Address Card 1 -->
     <% if (userAddress && userAddress.address && userAddress.address.length > 0) { %>
   <% userAddress.address.forEach((addr, index) => { %>
-    <div class="mb-4">
+    <div class="mb-4"  >
       <div class="address-card">
         <h6><%= addr.name %> (<%= addr.addressType %>)</h6>
         <p class="mb-1"><%= addr.addressLine %>, <%= addr.landMark %></p>

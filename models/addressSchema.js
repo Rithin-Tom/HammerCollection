@@ -1,55 +1,55 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const {Schema} = mongoose;
-
+const { Schema } = mongoose;
 
 const addressSchema = new Schema({
-    user:{
-        type:Schema.Types.ObjectId,
-        ref:"User",
-        require:true,
-
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    require: true,
+  },
+  address: [
+    {
+      addressType: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      landMark: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: String,
+        required: true,
+      },
+      pincode: {
+        type: Number,
+        required: true,
+      },
+      phone: {
+        type: String,
+        required: true,
+      },
+      altPhone: {
+        type: String,
+        required: true,
+      },
+      addressLine: {
+        type: String,
+        required: true,
+      },
     },
-    address:[{
-        addressType:{
-            type:String,
-            required:true
-        },
-        name:{
-            type:String,
-            required:true
-        },
-        city:{
-            type:String,
-            required:true
-        },
-        landMark:{
-            type:String,
-            required:true
-        },
-        state: {
-            type: String,
-            required: true
-        },
-        pincode:{
-            type:Number,
-            required:true
-        },
-        phone:{
-            type:String,
-            required:true
-        },
-        altPhone:{
-            type:String,
-            required:true
-        },
-        addressLine:{
-            type:String,
-            required:true
-        }
-    }]
-})
+  ],
+});
 
-const Address = mongoose.model("Address",addressSchema)
+const Address = mongoose.model("Address", addressSchema);
 
-module.exports = Address
+module.exports = Address;

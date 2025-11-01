@@ -1,0 +1,221 @@
+<!-- Bootstrap 5 CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Cropper.js CSS -->
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+
+<!-- Cropper.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<body style="
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('https://i.pinimg.com/736x/fa/4a/fa/fa4afaac480367b0867308624a84fda9.jpg'); /* Replace with your actual image path */
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+">
+
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- Sidebar -->
+
+      <%- include('../partials/user/sideBar', { user: user }) %>
+
+        <!-- Main Content -->
+        <div class="col-12 col-md-9 d-flex justify-content-center align-items-center p-4">
+          <div class="bg-white rounded-4 shadow p-4"
+            style="width: 100%; border: 40px solid rgb(27 57 84); max-width: 800px;">
+
+            <h3 class="text-center mb-4">My Wishlist</h3>
+
+            <!-- WISHLIST ITEM -->
+            <% if (!wishlist || wishlist.products.length === 0) { %>
+              <div class="card mb-3">
+                <div class="row g-0 align-items-center">
+                  <p>Your wishlist is empty add some....</p>
+
+                </div>
+              </div>
+
+              <% } else { %>
+
+                <% wishlist.products.forEach(element => { %>
+                  <div class="d-flex align-items-center border-bottom pb-3 mb-3">
+                    <a href='/product/<%=element.productId._id%>'>
+                    <img src="<%= element.productId.productImage[0] %>" alt="Product Image" class="rounded me-3"
+                      style="width: 80px; height: 80px; object-fit: contain;"></a>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1"><%= element.productId.productName %></h6>
+                      <p class="mb-1 text-muted"><%= element.productId.salePrice %></p>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button onclick="removeFromWishlist('<%= element.productId._id %>', this)" 
+                              class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i> Remove
+                      </button>
+                      <button onclick="addToCart('<%=element.productId._id%>','<%= element.productId.salePrice %>',this)" class="btn btn-dark flex-fill">Add to Cart</button>
+                    </div>
+                  </div>
+                 
+                <% }) %>
+
+                <% } %>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+<script>
+  async function addToCart(id, price, btn) {
+        if (btn) {
+          btn.disabled = true;
+          btn.classList.add("no-hover");
+        }
+
+        try {
+          const res = await fetch("/wishList/cart/add", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              id,
+              price,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+
+            const wishlistItem = btn.closest(".d-flex.align-items-center");
+      if (wishlistItem) {
+        wishlistItem.style.transition = "opacity 0.3s ease";
+        wishlistItem.style.opacity = "0"; 
+        setTimeout(() => {
+          wishlistItem.remove();
+
+         
+          const remaining = document.querySelectorAll(".d-flex.align-items-center");
+          if (remaining.length === 0) {
+            document.querySelector(".bg-white").insertAdjacentHTML(
+              "beforeend",
+              `<div class="card mb-3">
+                <div class="row g-0 align-items-center">
+                  <p>Your wishlist is empty add some....</p>
+                </div>
+              </div>`
+            ); 
+          }
+        }, 300); 
+      }
+
+
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "success",
+              title: data.message ||"Added to cart!",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            });
+          } else {
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "error",
+              title: data.message || "Failed to add to cart:",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            });
+          }
+
+          setTimeout(() => {
+            if (btn) {
+              btn.disabled = false;
+              btn.classList.remove("no-hover");
+            }
+          }, 1500);
+        } catch (error) {
+          console.log("ff", error);
+
+          if (btn) btn.disabled = false;
+          btn.classList.remove("no-hover");
+        }
+      }
+
+
+      async function removeFromWishlist(id, btn) {
+                 if (btn) {
+              btn.disabled = true;
+              btn.classList.add("no-hover");
+            }
+       try {
+            const res = await fetch("/wishList/remove", {
+              method: "DELETE",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ id }),
+            });
+          
+              const data = await res.json();
+
+               if (data.success) {
+               const wishlistItem = btn.closest(".d-flex.align-items-center");
+               if (wishlistItem) {
+                 wishlistItem.style.transition = "opacity 0.3s ease";
+                 wishlistItem.style.opacity = "0";
+                 setTimeout(() => {
+                   wishlistItem.remove();
+
+                   const remaining = document.querySelectorAll(".d-flex.align-items-center");
+                if (remaining.length === 0) {
+                document.querySelector(".bg-white").insertAdjacentHTML(
+                  "beforeend",
+                  `<div class="card mb-3">
+                    <div class="row g-0 align-items-center">
+                      <p>Your wishlist is empty add some....</p>
+                    </div>
+                  </div>`
+                   );
+                   }
+                 }, 300);
+               }
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Removed from wishlist",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+      });
+    } else {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: data.message || "Failed to remove",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove("no-hover");
+    }
+  }
+}
+ 
+
+      
+</script>

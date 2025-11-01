@@ -1,8 +1,8 @@
 const Category = require("../../models/categorySchema");
-const bcrypt = require("bcrypt");
+
 const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
-const { render } = require("ejs");
+
 const { default: mongoose } = require("mongoose");
 
 require("dotenv").config();
@@ -17,16 +17,15 @@ const loadProducts = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in load product page");
-    res.status(500).send("Error loading page");
+    res.status(500).send("Error loading page", error);
   }
 };
 
 const getProducts = async (req, res) => {
-  console.o;
+  
   try {
     const { keyword, category, status, price } = req.query;
-    console.log(req.query);
-
+    
     const filter = {};
     if (keyword) {
       filter.productName = { $regex: keyword, $options: "i" };
@@ -62,7 +61,7 @@ const getProducts = async (req, res) => {
     res.json({ success: true, products });
   } catch (error) {
     console.error("API error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error });
   }
 };
 
@@ -74,7 +73,7 @@ const loadAddProducts = async (req, res) => {
     });
     res.render("admin/addProduct", { messages: null, categories, brands: [] });
   } catch (error) {
-    res.render("admin/addProduct", { messages: err.message });
+    res.render("admin/addProduct", { messages: error.message });
   }
 };
 const checkNameTaken = async (req, res) => {
@@ -93,7 +92,9 @@ const checkNameTaken = async (req, res) => {
     }
     return res.json({ success: true, exists: false });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error", error });
   }
 };
 
@@ -107,6 +108,9 @@ const uploadProductImage = async (req, res) => {
     res.json({ success: true, imageUrl });
   } catch (error) {
     console.log("errror in uploading image");
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error", error });
   }
 };
 
@@ -183,7 +187,7 @@ const loadeditProducts = async (req, res) => {
 };
 
 const updateProducts = async (req, res) => {
-  const { productName, productId, quantity } = req.body;
+  const { productName, productId, quantity  } = req.body;
   const id = productId;
   let updatedProduct = null;
 
@@ -202,14 +206,18 @@ const updateProducts = async (req, res) => {
         });
       }
 
-      updatedProduct = await Product.findByIdAndUpdate(id, req.body, {
+      let updateData = { ...req.body };
+
+      if (updateData.quantity !== undefined) {
+  updateData.status = updateData.quantity == 0 ? "sold_out" : "available";
+}
+
+
+
+      updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
         new: true,
         session,
       });
-      
-      
-
-
       if (!updatedProduct) {
         throw { status: 404, message: "Product not found" };
       }
@@ -265,7 +273,6 @@ const deleteProduct = async (req, res) => {
 
 const deleteStatus = async (req, res) => {
   const { id } = req.params;
-  const bf = await Product.findById(id);
 
   try {
     const { isDeleted } = req.body;

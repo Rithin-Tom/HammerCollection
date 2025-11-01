@@ -1,38 +1,37 @@
-const mongoose = require('mongoose');
-const slugify = require('slugify');
+const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const categorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   slug: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   parent: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    default: null
+    ref: "Category",
+    default: null,
   },
-  isDeleted: { 
+  isDeleted: {
     type: Boolean,
-    default: false
+    default: false,
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-
-categorySchema.pre('validate', function (next) {
+categorySchema.pre("validate", function (next) {
   if (!this.slug && this.name) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   next();
 });
 
-module.exports = mongoose.model('Category', categorySchema);
+module.exports = mongoose.model("Category", categorySchema);

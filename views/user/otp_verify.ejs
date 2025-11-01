@@ -133,7 +133,7 @@
     if(!timeLeft <= 0){
       timeLeft--;
       localStorage.setItem("otp-timer",timeLeft);
-      countdownEl.textContent=timeLeft
+      // countdownEl.textContent=timeLeft
       countdownEl.textContent = timeLeft;
       if (timeLeft <= 0) {
         clearInterval(timer);
@@ -141,7 +141,7 @@
         localStorage.setItem("otp-timer",30);
       }
     }else{
-      countdownEl.textContent=timeLeft
+      // countdownEl.textContent=timeLeft
       countdownEl.textContent = timeLeft;
               resendBtn.disabled = false;
     }
@@ -167,7 +167,7 @@
     timeLeft = 30;
     countdownEl.textContent = timeLeft;
 
-    timer = setInterval(updateCountdown, 6000);
+    timer = setInterval(updateCountdown, 1000);
   });
 
 document.getElementById('otpForm').addEventListener('submit', async (e)=>{

@@ -139,7 +139,7 @@ async function requestEmailEdit(button) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email: '<%= user.email %>' }) // send user ID if needed
+      body: JSON.stringify({ email: '<%= user.email %>' }) 
     });
     const email = '<%= user.email %>'
 
