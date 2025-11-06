@@ -1,7 +1,9 @@
 const User = require("../../models/userSchema");
 require("dotenv").config();
+const  AppError = require('../../utils/appError')
+const {STATUS,MESSAGES}=require('../../utils/constants')
 
-const loadUser = async (req, res) => {
+const loadUser = async (req, res,next) => {
   try {
     const { name, status, page = 1 } = req.query;
     const pageSize = 5;
@@ -35,7 +37,7 @@ const loadUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -61,7 +63,7 @@ const blockUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -93,7 +95,7 @@ const getUsersList = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Error fetching users" });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 

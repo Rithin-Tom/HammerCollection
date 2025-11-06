@@ -229,7 +229,7 @@
       error6.style.display = "none";
       isValid= true;
     }
-    if (pincode === "" || !/^\d{6}$/.test(pincode)) {
+    if (pincode === "" || /^\d{6}$/.test(pincode)) {
     error7.style.display = "block";
     error7.innerHTML = "Please enter a valid 6-digit PIN code";
     isValid = false;

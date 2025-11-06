@@ -2,12 +2,13 @@ const Category = require("../../models/categorySchema");
 
 const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
-
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 const { default: mongoose } = require("mongoose");
 
 require("dotenv").config();
 
-const loadProducts = async (req, res) => {
+const loadProducts = async (req, res,next) => {
   try {
     const categories = await Category.find();
 
@@ -17,7 +18,7 @@ const loadProducts = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in load product page");
-    res.status(500).send("Error loading page", error);
+   next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -61,7 +62,7 @@ const getProducts = async (req, res) => {
     res.json({ success: true, products });
   } catch (error) {
     console.error("API error:", error);
-    res.status(500).json({ success: false, message: "Server error", error });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -92,9 +93,7 @@ const checkNameTaken = async (req, res) => {
     }
     return res.json({ success: true, exists: false });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+    return res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -108,9 +107,7 @@ const uploadProductImage = async (req, res) => {
     res.json({ success: true, imageUrl });
   } catch (error) {
     console.log("errror in uploading image");
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+    return res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -157,11 +154,11 @@ const createProduct = async (req, res) => {
     res.json({ success: true, message: "New product added successfully" });
   } catch (error) {
     console.error("Error in saving new product:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
-const loadeditProducts = async (req, res) => {
+const loadeditProducts = async (req, res,next) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId).populate("category");
@@ -182,7 +179,8 @@ const loadeditProducts = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Server Error");
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
+    
   }
 };
 
@@ -246,7 +244,7 @@ const updateProducts = async (req, res) => {
     res.json({ success: true, product: updatedProduct });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   } finally {
     session.endSession();
   }
@@ -267,7 +265,7 @@ const deleteProduct = async (req, res) => {
     res.json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting product:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 

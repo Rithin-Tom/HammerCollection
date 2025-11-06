@@ -1,16 +1,20 @@
 const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const getProductsByMainCategory = require("../../services/productsByMainCategory");
+
+
 const bcrypt = require("bcrypt");
 const {
   sendVerificationEmail,
   generateOtp,
 } = require("../../utils/otpServices");
 const { findOneUserByEmail } = require("../../services/userAuthServices");
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 
 require("dotenv").config();
 
-const loadHomepage = async (req, res) => {
+const loadHomepage = async (req, res,next) => {
   try {
     if (req.session.passport?.user) {
       req.session.user = await User.findById(req.session.passport?.user);
@@ -30,12 +34,12 @@ const loadHomepage = async (req, res) => {
       anime,
     });
   } catch (error) {
-    console.log("problem to  load home page", error);
-    res.status(500).send("server error");
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR))
+    
   }
 };
 
-const loadLoginpage = async (req, res) => {
+const loadLoginpage = async (req, res,next) => {
   try {
     res.render("user/login_page", {
       user: req.session.user || null,
@@ -44,15 +48,15 @@ const loadLoginpage = async (req, res) => {
     });
   } catch (error) {
     console.log("error in load loginpage", error.message);
-    res.status(500).send("server error ");
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR))
   }
 };
-const loadSignUPpage = async (req, res) => {
+const loadSignUPpage = async (req, res,next) => {
   try {
     res.render("user/signUp", { noHeader: true, noFooter: true });
   } catch (error) {
     console.log("error in load loginpage", error.message);
-    res.status(500).send("server error ");
+   next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR))
   }
 };
 
@@ -87,7 +91,7 @@ const signup = async (req, res) => {
       res.status(500).json({ message: "User already exist in this email" });
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -96,7 +100,7 @@ const loadErrorpage = async (req, res) => {
     res.render("error");
   } catch (error) {
     console.log("error in loading ERROR page", error.message);
-    res.status(500).send("server error");
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -145,8 +149,7 @@ const login = async (req, res) => {
   } catch (err) {
     console.error("JSON parse error:", err);
     console.log(err);
-    res.status(500).json({ success: false, message: "Error in login" });
-  }
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });}
 };
 
 const logout = async (req, res) => {
@@ -161,7 +164,7 @@ const logout = async (req, res) => {
   }
 };
 
-const loadOtp = async (req, res) => {
+const loadOtp = async (req, res,next) => {
   try {
     const { email, purpose } = req.query;
 
@@ -177,7 +180,8 @@ const loadOtp = async (req, res) => {
     res.render("user/otp_verify", { noHeader: true, noFooter: true });
   } catch (error) {
     console.log("error in loading OTP  page", error.message);
-    res.status(500).send("server error");
+    
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -227,7 +231,7 @@ const verifyOtp = async (req, res) => {
     }
   } catch (error) {
     console.error("OTP verification error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+     res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -256,11 +260,11 @@ const resendOtp = async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.log("Resend OTP Error:", error);
-    res.status(500).json({ success: false, message: "Could not resend OTP" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
-const loadfindAccount = async (req, res) => {
+const loadfindAccount = async (req, res,next) => {
   try {
     res.render("user/findAccount", {
       user: req.session.user || null,
@@ -269,7 +273,7 @@ const loadfindAccount = async (req, res) => {
     });
   } catch (error) {
     console.log("error in  loadfindaccout  page", error.message);
-    res.status(500).send("server error");
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -318,9 +322,7 @@ const findAccount = async (req, res) => {
     });
   } catch (error) {
     console.error("FindAccount Error:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -332,9 +334,7 @@ const resetPassword = async (req, res) => {
       noFooter: true,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -371,13 +371,7 @@ const saveRestPassword = async (req, res) => {
     res.json({ success: true, message: "Password successfully updated!" });
   } catch (error) {
     console.error("Reset password error:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error during password reset.",
-        error,
-      });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 

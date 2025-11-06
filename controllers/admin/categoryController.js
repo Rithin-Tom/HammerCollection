@@ -2,8 +2,10 @@ const Category = require("../../models/categorySchema");
 const Products = require("../../models/productSchema");
 require("dotenv").config();
 const slugify = require("slugify");
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 
-const loadCategory = async (req, res) => {
+const loadCategory = async (req, res,next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
@@ -31,9 +33,7 @@ const loadCategory = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error loading categories" });
+     next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -57,7 +57,7 @@ const addCategory = async (req, res) => {
       .json({ message: "Category has been created", category: newCategory });
   } catch (error) {
     console.error("Add Category Error:", error.message);
-    res.status(500).json({ error: "Internal server error" });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -102,9 +102,7 @@ const updateCategory = async (req, res) => {
       category: update,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Error in update ", error });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
     console.log("error in update");
   }
 };
@@ -124,10 +122,11 @@ const deleteCategory = async (req, res) => {
 
       for (let sub of allCategory) {
         sub.isDeleted = true;
+         await sub.save();
       }
 
       for (let product of productsToUpdate) {
-        product.status = "discountinued";
+        product.status = "discontinued";
         product.isActive = false;
         product.isDeleted = true;
         await product.save();
@@ -162,9 +161,7 @@ const deleteCategory = async (req, res) => {
       category: { category, allCategory },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Error in update ", error });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
     console.log("error in deleting");
   }
 };

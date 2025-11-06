@@ -31,6 +31,7 @@ const loadShopPage = async (req, res,next) => {
 
     res.status(STATUS.SUCCESS).render("user/shoppingPage", { categories: categoryTree ,search});
   } catch (error) {
+    console.log("loadShopPage:",error)
     if (error instanceof AppError) {
       return next(error);
     }
@@ -134,7 +135,7 @@ const filterProducts = async (req, res) => {
 
 
 
-    res.json({
+    res.status(STATUS.SUCCESS).json({
       success: true,
       products: paginatedProducts,
       totalProducts,
@@ -143,7 +144,7 @@ const filterProducts = async (req, res) => {
     });
   } catch (error) {
     console.error("Filter error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 

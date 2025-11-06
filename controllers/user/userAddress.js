@@ -1,30 +1,33 @@
 const User = require("../../models/userSchema");
 const Address = require("../../models/addressSchema");
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 
-const loadAddressBook = async (req, res) => {
+const loadAddressBook = async (req, res,next) => {
   try {
+    if (!req.session.user) {
+      return res.redirect("/login");
+    }
     let userId = req.session.user._id;
     const user = await User.findById(userId);
     let userAddress = await Address.findOne({ user: userId });
 
     res.render("user/userAddressBook", { user: user, userAddress });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+    console.log("loadAddressBook",error)
+   next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
-const AddAddress = async (req, res) => {
+const AddAddress = async (req, res,next) => {
   try {
     let userId = req.session.user._id;
     const user = await User.findById(userId);
 
     res.render("user/addAddress", { user: user });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+    console.log("AddAddress:",error)
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -66,8 +69,8 @@ const updateAddress = async (req, res) => {
       await userAddress.save();
 
       return res
-        .status(200)
-        .json({ success: true, message: "Address added successfully" });
+        .status(STATUS.SUCCESS)
+        .json({ success: true, message: MESSAGES.ADDRESS_ADDED });
     }
 
     // if (userAddress.address.length >= 3) {
@@ -79,15 +82,15 @@ const updateAddress = async (req, res) => {
     await userAddress.save();
 
     res
-      .status(200)
-      .json({ success: true, message: "Address added successfully" });
+      .status(STATUS.SUCCESS)
+      .json({ success: true, message: MESSAGES.ADDRESS_ADDED });
   } catch (error) {
     console.error("Error updating address:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
-const loadeditAddress = async (req, res) => {
+const loadeditAddress = async (req, res,next) => {
   try {
     const index = req.params.index;
     let userId = req.session.user._id;
@@ -97,9 +100,7 @@ const loadeditAddress = async (req, res) => {
 
     res.render("user/editAddress", { user: user, userAddress, index });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -137,11 +138,11 @@ const editAddress = async (req, res) => {
     await userAddress.save();
 
     res
-      .status(200)
-      .json({ success: true, message: "Address added successfully" });
+      .status(STATUS.SUCCESS)
+      .json({ success: true, message:MESSAGES.ADDRESS_ADDED });
   } catch (error) {
     console.error("Error updating address:", error);
-    return res.status(500).json({ message: "Server error", success: false });
+    return res.status(STATUS.SERVER_ERROR).json({ message: MESSAGES.SERVER_ERROR, success: false });
   }
 };
 
@@ -158,11 +159,11 @@ const deleteAddress = async (req, res) => {
     }
     await userAddress.save();
     res
-      .status(200)
-      .json({ success: true, message: "Address deleted successfully" });
+      .status(STATUS.SUCCESS)
+      .json({ success: true, message: MESSAGES.ADDRESS_DELETED });
   } catch (error) {
     console.error("Error updating address:", error);
-    return res.status(500).json({ message: "Server error", success: false });
+    return res.status(STATUS.SERVER_ERROR).json({ message: MESSAGES.SERVER_ERROR, success: false });
   }
 };
 

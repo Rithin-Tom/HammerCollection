@@ -59,7 +59,7 @@ app.use((req, res) => {
 
   return res.status(STATUS.NOT_FOUND).render("user/error", {
 
-    message: MESSAGES.PAGE_NOT_FOUND || "Page Not Found",
+    message: MESSAGES.PAGE_NOT_FOUND ,
     status: STATUS.NOT_FOUND,
     user: req.session?.user || null,
 

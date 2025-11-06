@@ -1,6 +1,8 @@
 const User = require("../../models/userSchema");
 const Cart = require("../../models/cartSchema");
 const Product = require("../../models/productSchema");
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 
 const loadCart = async (req, res) => {
   try {
@@ -34,6 +36,7 @@ const loadCart = async (req, res) => {
     res.render("user/userCart", { user: user, cart });
   } catch (error) {
     console.log("error in load cart", error);
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
@@ -47,21 +50,21 @@ const addToCart = async (req, res) => {
     if (!userId) {
       return res
         .status(401)
-        .json({ success: false, message: "Login required" });
+        .json({ success: false, message: MESSAGES.LOGIN_REQUIRED });
     }
 
     const product = await Product.findById(productId);
 
     if (!product) {
       return res
-        .status(401)
-        .json({ success: false, message: "product is discontinued" });
+        .status(STATUS.GONE)
+        .json({ success: false, message: MESSAGES.PRODUCT_DISCONTINUED});
     }
 
     if (product.quantity < 1)
       return res
         .status(401)
-        .json({ success: false, message: "product is out of stock" });
+        .json({ success: false, message: MESSAGES.PRODUCT_OUT_OF_STOCK });
 
        
 
@@ -102,10 +105,10 @@ const addToCart = async (req, res) => {
 
     await userCart.save();
 
-    res.json({ success: true, message: "Added to cart list" });
+    res.status(STATUS.SUCCESS).json({ success: true, message: MESSAGES.ITEM_ADDED_TO_CART });
   } catch (error) {
     console.error("Add to cart error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+     res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 const updateQuantity = async (req, res) => {
@@ -169,7 +172,7 @@ const updateQuantity = async (req, res) => {
     });
   } catch (error) {
     console.error("Update quantity error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+     res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -207,7 +210,7 @@ const deleteItem = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+     res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 

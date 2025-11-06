@@ -5,8 +5,10 @@ const fs = require('fs')
 const path = require('path')
 const PDFDocument=require('pdfkit')
 const Order = require('../../models/orderSchema')
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 
-const loadOrders = async (req, res) => {
+const loadOrders = async (req, res,next) => {
   try {
     const userId = req.session.user._id;
     const user = await User.findById(userId);
@@ -37,11 +39,11 @@ const loadOrders = async (req, res) => {
     });
   } catch (error) {
     console.error("Load orders error:", error);
-    res.status(500).send("Server error");
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
-const loadOrderDeatils =async (req,res) => {
+const loadOrderDeatils =async (req,res,next) => {
     try {
          const userId = req.session.user._id;
           const orderId = req.params.orderId;
@@ -54,7 +56,7 @@ const loadOrderDeatils =async (req,res) => {
          res.render('user/orderDetail',{user,orders})
         
     } catch (error) {
-        
+         next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
     }
     
 }
@@ -85,6 +87,8 @@ const cancelOrder = async (req,res) => {
     res.json({ success: true, order });
 
     } catch (error) {
+
+      res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
         
     }
     
@@ -117,7 +121,7 @@ const returnProduct =async (req,res) => {
 
     
   } catch ( error) {
-    
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
   
 }
@@ -236,7 +240,7 @@ pdfDoc.moveDown(0.5);
 
 
   } catch (error) {
-    
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 }
 

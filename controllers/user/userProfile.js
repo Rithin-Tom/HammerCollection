@@ -1,83 +1,90 @@
 const User = require("../../models/userSchema");
+
+const  AppError = require('../../utils/appError')
+const {STATUS,MESSAGES}=require('../../utils/constants')
 const bcrypt = require("bcrypt");
 const {
   generateOtp,
   sendVerificationEmail,
 } = require("../../utils/otpServices");
 
-const loadProfile = async (req, res) => {
+const loadProfile = async (req, res,next) => {
   try {
     let userId = req.session.user._id;
     const user = await User.findById(userId);
+
+    if (!user) {
+      return next(new AppError(MESSAGES.USER_NOT_FOUND || "User not found.", STATUS.NOT_FOUND));
+    }
 
     res.render("user/userProfile", { user: user });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error during password reset.",
-        error,
-      });
+    console.log("loadProfile:",error)
+
+   next(new AppError(MESSAGES.SERVER_ERROR, STATUS.SERVER_ERROR));
+
   }
 };
 
-const editProfile = async (req, res) => {
+const  editProfile = async (req, res,next) => {
   try {
     let userId = req.session.user._id;
     const user = await User.findById(userId);
+    if (!user) {
+      return next(new AppError(MESSAGES.USER_NOT_FOUND || "User not found.", STATUS.NOT_FOUND));
+    }
 
     res.render("user/userProfileEdits", { user });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error during password reset.",
-        error,
-      });
+    console.log("editProfile:",error)
+   next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR))
   }
 };
 
+
+
 const updateProfile = async (req, res) => {
   try {
-    let userId = req.session.user;
-    let { fullName, phoneNumber, emailAddress, currentPassword, newPassword } =
-      req.body;
-    const id = userId._id;
+    const userId = req.session.user._id;
+    const { fullName, phoneNumber, emailAddress, currentPassword, newPassword } = req.body;
 
-    let user = await User.findById(id);
-
+    const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(401)
-        .json({ message: "user not found", success: false });
+      return res.status(STATUS.NOT_FOUND).json({
+        success: false,
+        message: MESSAGES.USER_NOT_FOUND,
+      });
     }
 
-    if (currentPassword) {
-      if (user.password) {
-        if (!currentPassword || currentPassword.trim() == "") {
-          return res
-            .status(401)
-            .json({ message: "Current password is required", success: false });
-        }
-      }
+   
+    const existingUser = await User.findOne({
+      email: emailAddress,
+      _id: { $ne: userId },
+    });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use. Please use another.",
+      });
+    }
 
-      const isMatch = bcrypt.compare(currentPassword, user.password);
-
+    
+    if (currentPassword && user.password) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
       if (!isMatch) {
-        return res
-          .status(401)
-          .json({ message: "Incorrect current password ", success: false });
+        return res.status(STATUS.UNAUTHORIZED).json({
+          success: false,
+          message: MESSAGES.PASSWORD_INCORRECT,
+        });
       }
     }
 
-    user.name = fullName;
-    if (phoneNumber) {
-      user.phone = phoneNumber;
-    }
-    user.email = emailAddress;
+    
+    user.name = fullName || user.name;
+    user.phone = phoneNumber || user.phone;
+    user.email = emailAddress || user.email;
 
+    
     if (newPassword && newPassword.trim() !== "") {
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(newPassword, salt);
@@ -85,14 +92,16 @@ const updateProfile = async (req, res) => {
 
     await user.save();
 
-    let Url = "/profile";
-
-    return res
-      .status(200)
-      .json({ Url, message: "Profile updated successfully", success: true });
+    return res.status(STATUS.SUCCESS).json({
+      success: true,
+      message: MESSAGES.USER_UPDATED,
+      Url: "/profile",
+    });
   } catch (error) {
     console.error("Error updating profile:", error);
-    return res.status(500).json({ message: "Server error", success: false });
+    return res
+      .status(STATUS.SERVER_ERROR)
+      .json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -102,16 +111,16 @@ const sendOtp = async (req, res) => {
 
     if (!email) {
       return res
-        .status(400)
-        .json({ success: false, message: "Email is required." });
+        .status(STATUS.BAD_REQUEST)
+        .json({ success: false, message: MESSAGES.EMAIL_REQUIRED });
     }
     const user = await User.findOne({ email });
     if (!user) {
       return res
-        .status(400)
+        .status(STATUS.NOT_FOUND)
         .json({
           success: false,
-          message: "Account not found.",
+          message: MESSAGES.USER_ACCOUNT_NOT_FOUND,
           redirectUrl: "/signup",
         });
     }
@@ -122,9 +131,9 @@ const sendOtp = async (req, res) => {
     req.session.otpEmail = email;
     req.session.otpPurpose = "change-email";
 
-     res.status(200).json({
+     res.status(STATUS.SUCCESS).json({
       success: true,
-      message: "Account found! OTP sent.",
+      message: MESSAGES.OTP_SENT,
       redirectUrl: `/verify-otp?email=${encodeURIComponent(
         email
       )}&purpose=change-email`,
@@ -140,7 +149,7 @@ const sendOtp = async (req, res) => {
 
     if (!emailSend) {
       return res
-        .status(500)
+        .status(STATUS.NOT_FOUND)
         .json({ success: false, message: "Failed to send OTP email." });
     }
 
@@ -152,10 +161,10 @@ const sendOtp = async (req, res) => {
 
 
   } catch (error) {
-    console.error("FindAccount Error:");
+    console.error("FindAccount Error:",error);
     return res
-      .status(500)
-      .json({ success: false, message: "Server error", error });
+      .status(STATUS.SERVER_ERROR)
+      .json({ success: false, message: MESSAGES.SERVER_ERROR, error });
   }
 };
 
@@ -174,10 +183,10 @@ const uploadImage = async (req, res) => {
     await user.save();
 
     return res
-      .status(200)
-      .json({ message: "Profile updated successfully", success: true });
+      .status(STATUS.SUCCESS)
+      .json({ message: MESSAGES.USER_UPDATED, success: true });
   } catch (error) {
-    res.status(500).send("Something went wrong", error);
+    res.status(STATUS.SERVER_ERROR).json({message:MESSAGES.SERVER_ERROR,success: false});
   }
 };
 

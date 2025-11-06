@@ -1,20 +1,21 @@
 const User = require("../../models/userSchema");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-
-const loadAdminLogin = async (req, res) => {
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
+const loadAdminLogin = async (req, res,next) => {
   try {
     res.render("admin/adminLogin", { layout: false });
   } catch (error) {
-    res.status(500).json({ message: "Error", error });
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
-const loadAdminDashBoard = async (req, res) => {
+const loadAdminDashBoard = async (req, res,next) => {
   try {
     res.render("admin/adminDashBoard", { currentPage: "dashboard" });
   } catch (error) {
-    res.status(500).json({ message: "Error in loading AdminDashBoard", error });
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 

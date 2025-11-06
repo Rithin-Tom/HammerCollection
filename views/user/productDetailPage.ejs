@@ -10,6 +10,8 @@
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     body {
       margin: 0;
@@ -149,8 +151,8 @@
             <input type="text" id="quantityInput" class="form-control form-control-sm quantity-input me-2" value="2">
             <button class="btn btn-outline-light btn-sm me-3" onclick="increaseQty()">+</button>
 
-            <button class="btn btn-dark me-2">Add to Cart</button>
-            <!-- <button onclick="buyNow('<%=product._id %>')"  class="btn btn-dark me-2">Buy Now</button> -->
+            <button class="btn btn-dark me-2" onclick="addToCart('<%=product._id %>','<%= product.salePric %>',this)">Add to Cart</button>
+            <button onclick="buyNow('<%=product._id %>')"  class="btn btn-dark me-2">Buy Now</button>
             <button class="btn btn-outline-light"><i class="bi bi-heart"></i></button>
           </div>
 
@@ -303,6 +305,61 @@ const image = document.getElementById("mainProductImage");
     }
     
   }
+
+    async function addToCart(id, price, btn) {
+      console.log("eerror")
+        if (btn) {
+          btn.disabled = true;
+          btn.classList.add("no-hover");
+        }
+
+        try {
+          const res = await fetch("/cart/add", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              id,
+              price,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "success",
+              title: "Added to cart!",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            });
+          } else {
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "error",
+              title: data.message || "Failed to add to cart:",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            });
+          }
+
+          setTimeout(() => {
+            if (btn) {
+              btn.disabled = false;
+              btn.classList.remove("no-hover");
+            }
+          }, 1500);
+        } catch (error) {
+          console.log("ff", error);
+
+          if (btn) btn.disabled = false;
+          btn.classList.remove("no-hover");
+        }
+      }
 
 
 

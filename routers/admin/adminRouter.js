@@ -13,7 +13,7 @@ const orderController = require('../../controllers/admin/orderController')
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, "../../public/uploads");
-    fs.mkdirSync(uploadPath, { recursive: true }); // Create folder if not exists
+    fs.mkdirSync(uploadPath, { recursive: true }); 
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
@@ -33,7 +33,7 @@ const upload = multer({
     if (ext && mime) cb(null, true);
     else cb(new Error("Only images are allowed"));
   },
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  limits: { fileSize: 2 * 1024 * 1024 }, 
 });
 
 router.use((req, res, next) => {

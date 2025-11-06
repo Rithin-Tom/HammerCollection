@@ -4,9 +4,10 @@ const Cart = require("../../models/cartSchema");
 const Address = require("../../models/addressSchema");
 const Order = require("../../models/orderSchema");
 const Product = require("../../models/productSchema");
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 
-
-const loadCheckOut = async (req, res) => {
+const loadCheckOut = async (req, res,next) => {
   try {
     const userId = req.session.user._id;
 
@@ -22,7 +23,7 @@ const loadCheckOut = async (req, res) => {
   
     res.render("user/checkout", { user, cart, address });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error });
+   next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 const placeOrder = async (req,res) => {

@@ -3,16 +3,19 @@ const Product = require("../../models/productSchema");
 const Cart = require('../../models/cartSchema')
 const Wishlist = require('../../models/wishlistSchema');
 const mongoose = require("mongoose");
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 
 
-const loadwishList = async (req, res) => {
+const loadwishList = async (req, res,next) => {
   try {
     let userId = req.session.user._id;
     const wishlist = await Wishlist.findOne({userId}).populate('products.productId');
     const user = await User.findById(userId);
     res.render("user/wishlist", { user: user,wishlist });
   } catch (error) {
-    console.log(error)
+    console.log("error in loadwishList", error);
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
 
   }
 };
@@ -26,7 +29,7 @@ const addTowishlist = async (req, res) => {
     if (!userId) {
       return res
         .status(401)
-        .json({ success: false, message: "Login required" });
+        .json({ success: false, message:M});
     }
     const product = await Product.findById(productId);
     if (!product) {
@@ -72,8 +75,8 @@ const addTowishlist = async (req, res) => {
 
 
   } catch (error) {
-    console.error(error);
-res.status(500).json({ success: false, message: "Server error" });
+    console.error("addTowishlist:ERROR",error);
+res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
 
 
   }
@@ -158,7 +161,7 @@ const addToCart = async (req, res) => {
     res.json({ success: true, message: "Added to cart " });
   } catch (error) {
     console.error("Add to cart error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message:MESSAGES.SERVER_ERROR });
   }
 };
 
