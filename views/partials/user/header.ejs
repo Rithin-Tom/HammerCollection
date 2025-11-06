@@ -81,9 +81,20 @@
     </div>
 
     <!-- Search Bar (Desktop Only) -->
-    <form class="d-none d-lg-flex mx-auto w-50">
+    <!-- <form class="d-none d-lg-flex mx-auto w-50">
       <input class="form-control rounded-pill px-4" type="search" placeholder="Search for Products" aria-label="Search">
-    </form>
+    </form> -->
+    <form id="headerSearchForm" class="d-none d-lg-flex mx-auto w-50">
+  <input 
+    id="headerSearch"
+    class="form-control rounded-pill px-4" 
+    type="search" 
+    placeholder="Search for Products" 
+    aria-label="Search"
+    value="<%= typeof search !== 'undefined' ? search : '' %>" 
+  >
+</form>
+
 
     <!-- Desktop Icons -->
    <div class="d-none d-lg-flex align-items-center gap-3">
@@ -91,7 +102,7 @@
     <span class="text-white">Hi, <%= user.name %></span>
     <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
     <a href="/profile"  class="bi bi-person text-white fs-5"></a>
-    <i class="bi bi-heart text-white fs-5"></i>
+    <a href="/wishlist" class="bi bi-heart text-white fs-5"></a>
     <a href="/cart"  class="bi bi-cart text-white fs-5"></a>
   <% } else { %>
     <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
@@ -130,3 +141,18 @@
   </div>
 </div>
 
+<script>
+  document.getElementById("headerSearchForm")?.addEventListener("submit", function(e) {
+  e.preventDefault();
+  const query = document.getElementById("headerSearch").value.trim();
+
+  if (window.location.pathname === "/shop") {
+    // ✅ Already on shop page → update results dynamically
+    applyFilters(1);
+  } else {
+    // ✅ On home or any other page → redirect to shop with search query
+    window.location.href = `/shop?q=${encodeURIComponent(query)}`;
+  }
+});
+
+</script>

@@ -1,32 +1,61 @@
-
- <!DOCTYPE html>
- <html lang="en">
- <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hammer Collection</title>
 
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/assets/css/lineicons.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="/assets/css/fullcalendar.css" />
-    <link rel="stylesheet" href="/assets/css/fullcalendar.css" />
-    <link rel="stylesheet" href="/assets/css/main.css" />
- </head>
- <body>
- 
-    </div>
-        <% if(!noHeader) { %>
-            <%- include('../partials/admin/header') %> 
-            <% } %>
-            <% if(!noSideBar) { %>
-              <%- include('../partials/admin/sideBar') %>
-              <% } %>
-            <main><%- body %></main>
-                 <% if(!noFooter) { %>
-                <%- include('../partials/admin/footer') %>
-                <% } %>
-            </div>
- </body>
- </html>
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/assets/css/lineicons.css" />
+  <link rel="stylesheet" href="/assets/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="/assets/css/fullcalendar.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
 
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+
+    .layout-wrapper {
+      display: flex;
+      height: calc(100% - 60px); /* Assuming header height is 60px */
+    }
+
+    main {
+      flex: 1;
+      padding: 20px;
+      background: #f9fafb;
+      min-height: calc(100vh - 60px);
+    }
+
+    aside.sidebar {
+      width: 250px;
+      background: #f3f4f6;
+    }
+  </style>
+</head>
+<body>
+
+<% if(!noHeader) { %>
+    <%- include('../partials/admin/header') %> 
+<% } %>
+
+<div class="flex">
+    <% if(!noSideBar) { %>
+        <aside class="hidden lg:block w-72 fixed top-0 left-0 h-full">
+            <%- include('../partials/admin/sideBar') %>
+        </aside>
+    <% } %>
+
+    <main class="flex-1 lg:ml-72 pt-16 min-h-screen">
+        <%- body %>
+    </main>
+</div>
+
+<% if(!noFooter) { %>
+    <%- include('../partials/admin/footer') %>
+<% } %>
+
+</body>
+</html>

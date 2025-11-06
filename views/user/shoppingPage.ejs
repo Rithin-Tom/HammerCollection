@@ -8,10 +8,12 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <style>
       .background-image {
+      
         background-color: rgba(41, 102, 196, 0.8);
         background-size: 400% 400%;
         animation: gradientShift 10s ease infinite;
@@ -398,7 +400,7 @@
         <!-- Product Grid -->
         <div class="col-lg-9">
           <!-- <div id="productGrid" class="row g-4"> -->
-          <!-- Products will be dynamically loaded here -->
+         
           <div id="productGrid" class="row g-4"></div>
 
           <!-- 
@@ -421,6 +423,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+      window.addEventListener("DOMContentLoaded", () => {
+     if (document.getElementById("headerSearch")?.value.trim() !== "") {
+         applyFilters(1);
+        }
+      });
+
+
       function toggleCategory(header) {
         const card = header.closest(".category-card");
         card.classList.toggle("active");
@@ -474,11 +483,9 @@
           }" class="img-fluid">
                 </a>
             </div>
-            <button onclick="toggleWishlist('${
-              product._id
-            }')" class="wishlist-btn wishlist-heart">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+            <button onclick="addToWishlist('${product._id}')" data-id="${product._id}" class="wishlist-btn wishlist-heart">
+              <svg width="20" height="20" fill="${product.isWishlist ? 'red' : 'gray'}" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
               </svg>
             </button>
             ${
@@ -502,9 +509,7 @@
               }
             </div>
             <div class="d-flex gap-2">
-              <button onclick="buyNow('${
-                product._id
-              }')" class="buyNow btn flex-fill">Buy Now</button>
+              
               <button onclick="addToCart('${product._id}',${
             product.salePrice
           },this)" class="btn btn-dark flex-fill">Add to Cart</button>
@@ -578,6 +583,10 @@
           page: currentPage,
           limit: 8,
         };
+          const searchInput = document.getElementById("headerSearch");
+        if (searchInput && searchInput.value.trim() !== "") {
+        filters.search = searchInput.value.trim();
+        }
 
         if (selectedCategoryIds.length > 0) {
           filters.categoryIds = selectedCategoryIds;
@@ -611,6 +620,62 @@
               );
             }
           });
+      }
+
+      async function addToWishlist(id) {
+        try {
+          const res = await fetch('/wishList/add',{
+            method :"POST",
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify({
+              id
+            })
+          })
+
+          const result = await res.json()
+          if(result.success){
+            const btn = document.querySelector(`.wishlist-btn[data-id="${id}"]`);
+            if (btn) {
+              const svg = btn.querySelector("svg");
+                  if (svg) {
+                    svg.setAttribute("fill", result.isWishList ? "red" : "gray");
+                  }
+                }
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "success",
+              title: result.message||"Added to whislist!",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            });
+
+          } else {
+            Swal.fire({
+              toast: true,
+              position: "top-end",
+              icon: "error",
+              title: result.message || "Failed to add to wishlist",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            });
+          }
+        } catch (error) {
+          console.error("Wishlist error:", error);
+          Swal.fire({
+                toast: true,
+                position: "top-end",
+                icon: "error",
+                title: "Something went wrong",
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+            });
+          
+        }
+        
       }
 
       async function addToCart(id, price, btn) {
@@ -668,7 +733,7 @@
       }
 
       window.onload = () => {
-        applyFilters(1); // triggers product load and pagination
+        applyFilters(1); 
       };
     </script>
   </body>

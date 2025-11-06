@@ -1,13 +1,14 @@
 const Product = require("../../models/productSchema");
 const Category = require("../../models/categorySchema");
+const Wishlist = require('../../models/wishlistSchema')
 const getProductsByMainCategory = require("../../services/productsByMainCategory");
 
-const loadShopPage = async (req, res) => {
-  try {
-    const products = await Product.find({ isActive: true }).populate(
-      "category"
-    );
+const AppError = require("../../utils/appError");
+const { STATUS, MESSAGES } = require("../../utils/constants");
 
+const loadShopPage = async (req, res,next) => {
+  try {
+    const search = req.query.q || "";
     const mainCategories = await Category.find({
       parent: null,
       isDeleted: false,
@@ -28,10 +29,15 @@ const loadShopPage = async (req, res) => {
       })
     );
 
-    res.render("user/shoppingPage", { categories: categoryTree });
+    res.status(STATUS.SUCCESS).render("user/shoppingPage", { categories: categoryTree ,search});
   } catch (error) {
-    console.log(error);
-    res.status(500).send("server error");
+    console.log("loadShopPage:",error)
+    if (error instanceof AppError) {
+      return next(error);
+    }
+
+    
+    next(new AppError(MESSAGES.SERVER_ERROR, STATUS.SERVER_ERROR));
   }
 };
 
@@ -44,10 +50,23 @@ const filterProducts = async (req, res) => {
       rating,
       page = 1,
       limit = 8,
+      search = ""
     } = req.body;
 
     let products = [];
     let subCategoryIds = [];
+
+     let wishlistIds = [];
+    if (req.session?.user?._id) {
+      const wishlist = await Wishlist.findOne(
+        { userId: req.session.user._id },
+        "products.productId"
+      ).lean();
+
+      if (wishlist && wishlist.products) {
+        wishlistIds = wishlist.products.map(p => p.productId.toString());
+      }
+    }
 
     if (categoryIds && categoryIds.length > 0) {
       const selectedCategories = await Category.find({
@@ -95,12 +114,28 @@ const filterProducts = async (req, res) => {
 
     if (rating !== undefined) {
       products = products.filter((product) => product.rating >= rating);
+
+
     }
+
+    if (search && search.trim() !== "") {
+      const regex = new RegExp(search, "i");
+      products = products.filter(
+        (product) =>
+          regex.test(product.name) ||
+          regex.test(product.description) ||
+          (product.category && regex.test(product.category.name))
+      );
+    }
+
+     products = products.map(p => ({...p,isWishlist: wishlistIds.includes(p._id.toString())}));
     const totalProducts = products.length;
     const start = (page - 1) * limit;
     const paginatedProducts = products.slice(start, start + limit);
 
-    res.json({
+
+
+    res.status(STATUS.SUCCESS).json({
       success: true,
       products: paginatedProducts,
       totalProducts,
@@ -109,7 +144,7 @@ const filterProducts = async (req, res) => {
     });
   } catch (error) {
     console.error("Filter error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 

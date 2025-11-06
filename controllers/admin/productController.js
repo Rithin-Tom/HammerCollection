@@ -1,13 +1,14 @@
 const Category = require("../../models/categorySchema");
-const bcrypt = require("bcrypt");
+
 const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
-const { render } = require("ejs");
+const { STATUS, MESSAGES } = require("../../utils/constants");
+const AppError=require('../../utils/appError')
 const { default: mongoose } = require("mongoose");
 
 require("dotenv").config();
 
-const loadProducts = async (req, res) => {
+const loadProducts = async (req, res,next) => {
   try {
     const categories = await Category.find();
 
@@ -17,16 +18,15 @@ const loadProducts = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in load product page");
-    res.status(500).send("Error loading page");
+   next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
   }
 };
 
 const getProducts = async (req, res) => {
-  console.o;
+  
   try {
     const { keyword, category, status, price } = req.query;
-    console.log(req.query);
-
+    
     const filter = {};
     if (keyword) {
       filter.productName = { $regex: keyword, $options: "i" };
@@ -62,7 +62,7 @@ const getProducts = async (req, res) => {
     res.json({ success: true, products });
   } catch (error) {
     console.error("API error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -74,7 +74,7 @@ const loadAddProducts = async (req, res) => {
     });
     res.render("admin/addProduct", { messages: null, categories, brands: [] });
   } catch (error) {
-    res.render("admin/addProduct", { messages: err.message });
+    res.render("admin/addProduct", { messages: error.message });
   }
 };
 const checkNameTaken = async (req, res) => {
@@ -93,7 +93,7 @@ const checkNameTaken = async (req, res) => {
     }
     return res.json({ success: true, exists: false });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -107,6 +107,7 @@ const uploadProductImage = async (req, res) => {
     res.json({ success: true, imageUrl });
   } catch (error) {
     console.log("errror in uploading image");
+    return res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -153,11 +154,11 @@ const createProduct = async (req, res) => {
     res.json({ success: true, message: "New product added successfully" });
   } catch (error) {
     console.error("Error in saving new product:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
-const loadeditProducts = async (req, res) => {
+const loadeditProducts = async (req, res,next) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId).populate("category");
@@ -178,12 +179,13 @@ const loadeditProducts = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Server Error");
+    next(new AppError(MESSAGES.SERVER_ERROR,STATUS.SERVER_ERROR,))
+    
   }
 };
 
 const updateProducts = async (req, res) => {
-  const { productName, productId, quantity } = req.body;
+  const { productName, productId, quantity  } = req.body;
   const id = productId;
   let updatedProduct = null;
 
@@ -202,14 +204,18 @@ const updateProducts = async (req, res) => {
         });
       }
 
-      updatedProduct = await Product.findByIdAndUpdate(id, req.body, {
+      let updateData = { ...req.body };
+
+      if (updateData.quantity !== undefined) {
+  updateData.status = updateData.quantity == 0 ? "sold_out" : "available";
+}
+
+
+
+      updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
         new: true,
         session,
       });
-      
-      
-
-
       if (!updatedProduct) {
         throw { status: 404, message: "Product not found" };
       }
@@ -238,7 +244,7 @@ const updateProducts = async (req, res) => {
     res.json({ success: true, product: updatedProduct });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+   res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   } finally {
     session.endSession();
   }
@@ -259,13 +265,12 @@ const deleteProduct = async (req, res) => {
     res.json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting product:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(STATUS.SERVER_ERROR).json({ success: false, message: MESSAGES.SERVER_ERROR });
   }
 };
 
 const deleteStatus = async (req, res) => {
   const { id } = req.params;
-  const bf = await Product.findById(id);
 
   try {
     const { isDeleted } = req.body;

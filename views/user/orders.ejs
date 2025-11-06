@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Orders</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-image: url("https://i.pinimg.com/736x/fa/4a/fa/fa4afaac480367b0867308624a84fda9.jpg");
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+      }
+      .order-card {
+        border: 2px solid #000000;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: #fff;
+      }
+      .order-item img {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar Placeholder -->
+        <%- include('../partials/user/sideBar', { user: user }) %>
+
+        <!-- Main Content -->
+        <div class="col-12 col-md-9 p-4">
+          <div
+            class="bg-white rounded-4 shadow p-4"
+            style="
+              border: 40px solid rgb(27 57 84);
+              max-width: 900px;
+              margin: auto;
+            "
+          >
+            <h3 class="text-center mb-4">My Orders</h3>
+
+            <% if (orders) { %> <% orders.forEach(element => { %>
+            <div class="order-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Order ID:#<%= element.orderId %></h6>
+                <span class="badge bg-warning"><%= element.orderStatus %></span>
+              </div>
+              <small class="text-muted"
+                >Placed on: <%= element.createdOn.toLocaleDateString('en-US', {
+                weekday: 'short', month: 'short', day: 'numeric', year:
+                'numeric' }).replace(/,/g, '') %></small
+              >
+
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>Items: <%= element.orderedItems.length %></strong>
+                <strong>Total: <%= element.finalAmount %></strong>
+                <div class="d-flex gap-2">
+                  <a
+                    href="/orders/<%= element.orderId %>"
+                    class="btn btn-sm btn-outline-dark"
+                    ><i class="bi bi-eye"></i> View</a>
+                  <a href="/orders/invoice/<%= element.orderId %>" class="btn btn-sm btn-outline-success"
+                    ><i class="bi bi-v-circle"></i>Download Invoice</a>
+                </div>
+              </div>
+            </div>
+
+            <% }) %> <% } %>
+
+            <nav aria-label="Orders pagination" class="mt-4">
+              <ul class="pagination justify-content-center">
+                <% if (currentPage > 1) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>"
+                    >Previous</a
+                  >
+                </li>
+                <% } else { %>
+                <li class="page-item disabled">
+                  <span class="page-link">Previous</span>
+                </li>
+                <% } %> <% for(let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+                <% } %> <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>"
+                    >Next</a
+                  >
+                </li>
+                <% } else { %>
+                <li class="page-item disabled">
+                  <span class="page-link">Next</span>
+                </li>
+                <% } %>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

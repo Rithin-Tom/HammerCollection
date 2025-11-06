@@ -1,95 +1,92 @@
-const mongoose = require('mongoose')
-const {Schema} = mongoose
-
-
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const reviewSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   name: String,
-  rating: { type: Number, required: true }, 
+  rating: { type: Number, required: true },
   comment: String,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
-const productSchema = new Schema({
-    productName:{
-        type:String,
-        required:true
+const productSchema = new Schema(
+  {
+    productName: {
+      type: String,
+      required: true,
     },
-    description:{
-        type:String,
-        required:true
-
-    },    
-    category:{
-        type:Schema.Types.ObjectId,
-        ref:"Category",
-        required:true,
+    description: {
+      type: String,
+      required: true,
     },
-    regularPrice:{
-        type:Number,
-        required:true,
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
     },
-    salePrice:{
-        type:Number,
-        required:true
+    regularPrice: {
+      type: Number,
+      required: true,
     },
-    productOffer:{
-        type:Number,
-        default:0,
-
+    salePrice: {
+      type: Number,
+      required: true,
     },
-    quantity:{
-        type:Number,
-        default:true
+    productOffer: {
+      type: Number,
+      default: 0,
     },
-    maxCartQuantity:{
-        type:Number,
-        default:5
+    quantity: {
+      type: Number,
+      required: true,
     },
-    productImage:{
-        type:[String],
-        required:true
+    maxCartQuantity: {
+      type: Number,
+      default: 5,
     },
-    isActive:{
-        type:Boolean,
-        default:false
+    productImage: {
+      type: [String],
+      required: true,
     },
-    isFeatured:{
-        type:Boolean,
-        default:false
+    isActive: {
+      type: Boolean,
+      default: false,
     },
-    status:{
-        type:String,
-        enum:["available","sold_out","discountinued"],
-        required:true,
-        default:"available"
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ["available", "sold_out", "discountinued"],
+      required: true,
+      default: "available",
     },
     reviews: [reviewSchema],
     rating: {
-         type: Number,
-         default: 0
+      type: Number,
+      default: 0,
     },
     numReviews: {
-         type: Number,
-         default: 0
+      type: Number,
+      default: 0,
     },
-    isDeleted: { 
-    type: Boolean,
-    default: false
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
+
+productSchema.pre("save", function (next) {
+  if (this.quantity == 0) {
+    this.status = "sold_out";
+  } else {
+    this.status = "available";
   }
+  next();
+});
 
-
-},{timestamps:true});
-
-
-productSchema.pre('save',function (next){
-    if( this.quantity==0){
-        this.status ='sold_out'
-    }else{
-        this.status ='available'
-    }
-})
-
-const Product = mongoose.model("Product",productSchema);
+const Product = mongoose.model("Product", productSchema);
 module.exports = Product;
