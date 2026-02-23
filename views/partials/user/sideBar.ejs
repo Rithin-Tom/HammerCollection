@@ -1,48 +1,144 @@
 <style>
-  a {
-    text-decoration: none;
+  /* Styling for the Letter Avatar */
+.avatar-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
-  }
+    font-weight: 900;
+    font-size: 3rem; /* Adjust based on container size */
+    text-shadow: 2px 2px 0px #000;
+    text-transform: uppercase;
+    border-radius: 50%;
+}
+
+/* Sidebar version size */
+.sidebar-avatar .avatar-initials {
+    font-size: 2rem;
+}
+    .comic-sidebar {
+        /* Professional Glassmorphism */
+        background: rgba(27, 57, 84, 0.85); /* Your deep blue with transparency */
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        
+        min-height: 100vh;
+        border-right: 3px solid #000;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        padding: 5px;
+        background: #fff;
+        border: 3px solid #000;
+        border-radius: 50%;
+        box-shadow: 5px 5px 0px rgba(0,0,0,0.3);
+    }
+
+    .nav-menu {
+        padding: 0;
+        margin-top: 2rem;
+    }
+
+    .nav-item-link {
+        display: flex;
+        align-items: center;
+        padding: 14px 25px;
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border-left: 5px solid transparent;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-item-link i {
+        font-size: 1.2rem;
+        margin-right: 15px;
+        transition: transform 0.3s ease;
+    }
+
+    .nav-item-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffc107 !important;
+        border-left: 5px solid #ffc107;
+        padding-left: 35px;
+    }
+
+    .nav-item-link:hover i {
+        transform: scale(1.2) rotate(-5deg);
+    }
+
+    .nav-item-link.active {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffc107 !important;
+        border-left: 5px solid #ffc107;
+    }
+
+    .sidebar-footer {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        opacity: 0.5;
+        font-size: 0.7rem;
+        color: white;
+    }
 </style>
 
-<div
-  class="col-12 col-md-3 p-4"
-  style="
-    background-color: rgb(27 57 84);
-    color: white;
-    min-height: 100vh;
-    border-top-right-radius: 40px;
-    border-bottom-right-radius: 40px;
-  "
->
-  <div class="text-center mb-4">
-    <div
-      class="mx-auto"
-      style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden"
-    >
-      <img 
-  src="<%= user && user.profileImage ? user.profileImage : '/images/default-profile.png' %>" 
-  alt="Profile Image" 
-  style="width: 100%; height: 100%; object-fit: cover"
-/>
-
+<div class="col-12 col-md-3 p-0 comic-sidebar d-none d-md-block">
+    <div class="p-5 text-center">
+       <div class="profile-avatar-container">
+    <div style="width: 160px; height: 160px; border-radius: 50%; overflow: hidden;">
+        <% if (user && user.profileImage) { %>
+            <img id="profileImage" src="<%= user.profileImage %>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+            <div class="avatar-initials js-initial-avatar" data-name="<%= user.name %>" 
+                 style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 3.5rem; text-shadow: 2px 2px 0px #000; text-transform: uppercase;">
+                <%= user.name.charAt(0) %>
+            </div>
+            <img id="profileImage" src="" style="display:none;">
+        <% } %>
+    </div>
+</div>
+        <h5 class="fw-bold m-0 mt-2 text-white"><%= user && user.name ? user.name.toUpperCase() : 'GUEST' %></h5>
+        <div class="badge bg-primary mt-1" style="font-size: 0.6rem; border: 1px solid #000;">VERIFIED HERO</div>
     </div>
 
-    <!-- <i class="bi bi-person-circle" style="font-size: 60px;"></i> -->
-    <h5 class="mt-2">
-  <%= user && user.name ? user.name.toUpperCase() : 'Guest User' %>
-</h5>
-  </div>
+    <div class="nav-menu">
+        <a href="/profile" class="nav-item-link <%= typeof activePage !== 'undefined' && activePage === 'profile' ? 'active' : '' %>">
+            <i class="bi bi-person-badge"></i> Profile Details
+        </a>
+        <a href="/profile/addressBook" class="nav-item-link">
+            <i class="bi bi-journal-bookmark"></i> Address Book
+        </a>
+        <a href="/orders" class="nav-item-link">
+            <i class="bi bi-box-seam"></i> My Missions (Orders)
+        </a>
+        <a href="/wishlist" class="nav-item-link">
+            <i class="bi bi-heart"></i> Saved Gear
+        </a>
+        <a href="/cart" class="nav-item-link">
+            <i class="bi bi-cart4"></i> Inventory
+        </a>
+        <a href="/wallet" class="nav-item-link">
+            <i class="bi bi-wallet2"></i> Credit Vault
+        </a>
+    </div>
 
-  <ul class="list-unstyled ps-3">
-    <a href="/profile"><li class="mb-3">My Profile</li></a>
-
-    <a href="/profile/addressBook"> <li class="mb-3">Address Book</li></a>
-    
-     <a href="/orders" class="mb-3">My Orders</a>
-    <li class="mb-3">My Wishlist</li>
-    <a href="/cart" class="mb-3">Cart</a>
-    <li class="mb-3">Wallet</li>
-    <li class="mb-3">Coupons</li>
-  </ul>
+    <div class="sidebar-footer">
+        &copy; 2026 COMIC SHOP HQ
+    </div>
 </div>
+<script>
+
+</script>

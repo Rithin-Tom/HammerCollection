@@ -41,10 +41,12 @@ const loadHomepage = async (req, res,next) => {
 
 const loadLoginpage = async (req, res,next) => {
   try {
+    const error = req.query.error;
     res.render("user/login_page", {
       user: req.session.user || null,
       noHeader: true,
       noFooter: true,
+      query: { error },
     });
   } catch (error) {
     console.log("error in load loginpage", error.message);
