@@ -1,240 +1,341 @@
-<!-- Bootstrap 5 CDN -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-<!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Comic Edition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
-<!-- Cropper.js CSS -->
+    <style>
+        :root {
+            --comic-blue: rgb(27, 57, 84);
+            --comic-border: 4px solid #000;
+            --panel-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+        }
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            background-image: url('https://i.pinimg.com/736x/fa/4a/fa/fa4afaac480367b0867308624a84fda9.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
 
-<!-- Cropper.js JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+        /* Comic Panel Styling */
+        .comic-panel {
+            background: white;
+            border: var(--comic-border);
+            box-shadow: var(--panel-shadow);
+            transition: transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-<body style="
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  background-image: url('https://i.pinimg.com/736x/fa/4a/fa/fa4afaac480367b0867308624a84fda9.jpg'); /* Replace with your actual image path */
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-">
+        .comic-panel:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.3);
+        }
 
-  <div class="container-fluid">
-    <div class="row">
+        /* Profile Image Panel */
+        .profile-avatar-container {
+            border: 5px solid var(--comic-blue);
+            padding: 5px;
+            background: #fff;
+            display: inline-block;
+            border-radius: 50%;
+            box-shadow: 4px 4px 0px #000;
+        }
 
-      <!-- Sidebar -->
+        /* Grid Icons Styling */
+        .action-card {
+            background: #f8f9fa;
+            border: 3px solid var(--comic-blue);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+            color: var(--comic-blue);
+        }
 
-      <%- include('../partials/user/sideBar', { user: user }) %>
+        .action-card:hover {
+            background: var(--comic-blue);
+            color: white !important;
+            transform: rotate(-2deg) scale(1.05);
+        }
+        .img-container {
+    width: 100%;
+    max-height: 450px;
+    margin-bottom: 10px;
+    background-color: #f7f7f7;
+    overflow: hidden;
+    border: 2px dashed #ccc;
+}
 
-      <!-- Main Content -->
-      <div class="col-12 col-md-9 d-flex justify-content-center align-items-center p-4">
-        <div class="bg-white rounded-4 shadow p-4" style="width: 100%; border: 40px solid  rgb(27 57 84);;  max-width: 700px;">
+#imagePreview {
+    display: block;
+    max-width: 100%; 
+}
 
-          <div class="text-center position-relative mb-4">
-            <% if (user) { %>
-       <!-- Profile Image with Edit Button -->
-<div class="mx-auto position-relative" style="width: 140px; height: 140px;">
-  <div style="width: 140px; height: 140px; border-radius: 50%; overflow: hidden;">
-    <img id="profileImage" src="<%= user.profileImage %>" alt="Profile Image"
-         style="width: 100%; height: 100%; object-fit: cover;">
-  </div>
+        .speech-header {
+            background: var(--comic-blue);
+            color: white;
+            padding: 10px 20px;
+            display: inline-block;
+            border-radius: 0 20px 20px 20px;
+            margin-bottom: 20px;
+            border: 2px solid #000;
+        }
 
-  <button class="btn btn-sm btn-primary position-absolute" 
-          style="top: -10px; right: -10px; border-radius: 50%; padding: 5px 8px;"
-          data-bs-toggle="modal" 
-          data-bs-target="#imageCropModal"
-          title="Edit Profile Image">
-    <i class="bi bi-pencil-square"></i>
-  </button>
+        .info-label {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            color: #666;
+            display: block;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--comic-blue);
+            font-size: 1.1rem;
+        }
+
+        .modal-content {
+            border: 5px solid var(--comic-blue);
+            border-radius: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../partials/user/sideBar', { user: user }) %>
+
+            <div class="col-12 col-md-9 d-flex justify-content-center align-items-center p-lg-5 p-3">
+                <div class="comic-panel p-4 w-100" style="max-width: 850px; border-width: 15px; border-color: var(--comic-blue);">
+                    
+                    <div class="row g-4">
+                        <div class="col-md-5 text-center border-end-md">
+                            <div class="position-relative mb-3">
+                               
+  <div class="profile-avatar-container">
+    <div style="width: 160px; height: 160px; border-radius: 50%; overflow: hidden; position: relative; background: #eee;">
+        <% if (user && user.profileImage) { %>
+            <img id="profileImage" src="<%= user.profileImage %>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+        <% } else { %>
+            <div class="avatar-initials js-initial-avatar" data-name="<%= user.name %>" 
+                 style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 3.5rem; text-shadow: 2px 2px 0px #000; text-transform: uppercase;">
+                <%= user.name ? user.name.charAt(0) : 'U' %>
+            </div>
+            <img id="profileImage" src="" style="display:none;">
+        <% } %>
+    </div>
 </div>
 
-<!-- Bootstrap Modal for Cropping -->
-<div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Profile Image</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+<button class="btn btn-primary position-absolute shadow" 
+        style="bottom: 10px; right: 25%; border-radius: 50%; border: 3px solid #000; z-index: 10;"
+        data-bs-toggle="modal" data-bs-target="#imageCropModal">
+    <i class="bi bi-camera-fill"></i>
+</button>
+                            </div>
+                            
+                            <h2 class="fw-black mb-1" style="letter-spacing: -1px;"><%= user.name.toUpperCase() %></h2>
+                            <span class="badge bg-warning text-dark border border-dark mb-3">ELITE MEMBER</span>
+                            
+                            <div class="mt-2">
+                                <a href="/profile/edit" class="btn btn-sm btn-dark w-75 rounded-0 border-2">
+                                    <i class="bi bi-gear-fill me-2"></i>SETTINGS
+                                </a>
+                            </div>
+                        </div>
 
-      <div class="modal-body text-center">
-        <input type="file" id="inputImage"  name="profileImage" accept="image/*" class="form-control mb-3">
+                        <div class="col-md-7">
+                            <div class="speech-header shadow-sm">
+                                <h5 class="m-0 fw-bold"><i class="bi bi-lightning-fill me-2"></i>DASHBOARD PANELS</h5>
+                            </div>
 
-        <!-- Image for cropping -->
-        <div>
-          <img id="imagePreview" style="max-width: 100%; max-height: 400px;">
-        </div>
-      </div>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <a href="/orders" class="action-card d-block p-3 text-center shadow-sm">
+                                        <i class="bi bi-box-seam fs-2"></i>
+                                        <div class="fw-bold mt-1">ORDERS</div>
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="/wishlist" class="action-card d-block p-3 text-center shadow-sm">
+                                        <i class="bi bi-heart fs-2"></i>
+                                        <div class="fw-bold mt-1">WISHLIST</div>
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="/cart" class="action-card d-block p-3 text-center shadow-sm">
+                                        <i class="bi bi-cart fs-2"></i>
+                                        <div class="fw-bold mt-1">MY CART</div>
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="/referrals" class="action-card d-block p-3 text-center shadow-sm">
+                                        <i class="bi bi-people fs-2"></i>
+                                        <div class="fw-bold mt-1">REFERRALS</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success" id="cropAndUploadBtn">Crop & Upload</button>
-      </div>
-    </div>
-  </div>
-</div>
-            
-
-            <% } else { %>
-            <i class="bi bi-person-circle" style="font-size: 100px; color: #333;"></i>
-            <% } %>
-
-            <a href='/profile/edit' ; class="btn btn-sm btn-outline-secondary position-absolute end-0 top-0">
-
-              <i class="bi bi-pencil-square"></i> Edit Profile
-            </a>
-            <h4 class="mt-2 mb-3"><%=user.name.toUpperCase() %></h4>
-            <div class="d-flex justify-content-between flex-wrap gap-3 mb-4">
-              <div class="flex-fill text-center bg-light rounded-3 p-3" style="min-width: 120px;">
-                  <a  href="/cart" class="d-inline-block text-dark text-decoration-none"> 
-                <i class="bi bi-box-seam" style="font-size: 30px;"></i>
-                <div class="mt-2 fw-semibold">Orders</div>
-                </a>
-              </div>
-
-              <div class="flex-fill text-center bg-light rounded-3 p-3" style="min-width: 120px;">
-                <a  href="/cart" class="d-inline-block text-dark text-decoration-none"> 
-                <i class="bi bi-heart" style="font-size: 30px;"></i>
-                <div class="mt-2 fw-semibold">Wishlist</div>
-                </a>
-              </div>
-                 
-              <div class="flex-fill text-center bg-light rounded-3 p-3" style="min-width: 120px;">
-                <a  href="/cart" class="d-inline-block text-dark text-decoration-none"> 
-                <i  class="bi bi-cart" style="font-size: 30px;"></i>
-                <div class="mt-2 fw-semibold">Cart</div>
-                </a>
-              </div>
-              
-
-              <div class="flex-fill text-center bg-light rounded-3 p-3" style="min-width: 120px;">
-                  <a  href="/cart" class="d-inline-block text-dark text-decoration-none"> 
-                <i class="bi bi-people" style="font-size: 30px;"></i>
-                <div class="mt-2 fw-semibold">Referred Users</div>
-                 </a>
-              </div>
+                        <div class="col-12 mt-4">
+                            <div class="p-4 rounded-4 shadow-inner" style="background: #f1f4f7; border: 3px dashed var(--comic-blue);">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <span class="info-label">Full Name</span>
+                                        <div class="info-value"><%= user.name || "N/A" %></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span class="info-label">Email Address</span>
+                                        <div class="info-value"><%= user.email %></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span class="info-label">Mobile Number</span>
+                                        <div class="info-value"><%= user.phone || "Add Phone Number" %></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span class="info-label">Secret Referral Code</span>
+                                        <div class="info-value text-primary">#<%= user?.ref || "NONE" %></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-
-            <div class="p-3 rounded-3" style="background-color: #1b3954; color: white;">
-              <p><strong>Full Name:</strong><%=user.name ? user.name :"" %></p>
-              <p><strong>Email:</strong> <%=user.email%></p>
-              <% if(user.phone) { %>
-              <p><strong>Phone No:</strong> <%= user.phone %></p>
-              <% } else { %>
-              <p> </p>
-              <% } %>
-            
-
-              <p><strong>Referral Code:</strong><%=user?.ref%></p>
-            </div>
-
-          </div>
         </div>
-
-
-      </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="modal fade" id="imageCropModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white rounded-0">
+                    <h5 class="modal-title fw-bold">UPDATE PROFILE PHOTO</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center bg-light">
+                    <input type="file" id="inputImage" name="profileImage" accept="image/*" class="form-control border-2 border-dark mb-3">
+                    <div class="img-container">
+                        <img id="imagePreview" style="max-width: 100%; max-height: 400px;">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button class="btn btn-outline-dark px-4 fw-bold" data-bs-dismiss="modal">CANCEL</button>
+                    <button class="btn btn-primary px-4 fw-bold" id="cropAndUploadBtn" style="border: 2px solid #000;">CROP & UPLOAD</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script>
+window.onload = () => {
+    let cropper;
+    const inputImage = document.getElementById('inputImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const cropModalEl = document.getElementById('imageCropModal');
+    const uploadBtn = document.getElementById('cropAndUploadBtn');
 
+    const bsModal = new bootstrap.Modal(cropModalEl);
 
-</body>
-<script>
-  let cropper;
-  const input = document.getElementById('inputImage');
-  const image = document.getElementById('imagePreview');
-  const profileImage = document.getElementById('profileImage');
-  const modalEl = document.getElementById('imageCropModal');
-  let bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
-  const uploadBtn = document.getElementById('cropAndUploadBtn');
+    inputImage.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                imagePreview.src = event.target.result;
 
-  input.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+                if (cropper) {
+                    cropper.destroy();
+                }
 
-    if (cropper) cropper.destroy();
-
-    const url = URL.createObjectURL(file);
-    image.src = url;
-
-   
-    
-
-
-    image.onload = () => {
-      cropper = new Cropper(image, {
-        aspectRatio: 1,
-        viewMode: 1,
-        dragMode: 'move',
-        preview: '.preview',
-        autoCropArea: 1
-      });
-    };
-  });
-
-  
-  document.getElementById('cropAndUploadBtn').addEventListener('click', async () => {
-    if (!cropper) return Swal.fire({
-              title: 'error!',
-              text: 'Please upload an image first.',
-              icon: 'error',
-              confirmButtonText: 'OK'
-            });
-
-    const canvas = cropper.getCroppedCanvas({
-      width: 300,
-      height: 300
+               
+                setTimeout(() => {
+                    cropper = new Cropper(imagePreview, {
+                        aspectRatio: 1,
+                        viewMode: 1, 
+                        autoCropArea: 1,
+                        checkOrientation: false,
+                        responsive: true,
+                    });
+                }, 200);
+            };
+            reader.readAsDataURL(file);
+        }
     });
 
-    Swal.fire({
-  title: 'Uploading...',
-  text: 'Please wait while we upload your image.',
-  allowOutsideClick: false,
-  didOpen: () => {
-    Swal.showLoading();
-  }
-});
+    cropModalEl.addEventListener('hidden.bs.modal', function () {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        inputImage.value = ''; 
+        imagePreview.src = '';
+    });
 
-uploadBtn.disabled = true;
+    uploadBtn.onclick = async () => {
+        if (!cropper || !inputImage.files[0]) {
+            return Swal.fire('Wait!', 'Please select an image file first using the button above.', 'warning');
+        }
 
-    canvas.toBlob(async (blob) => {
-      const formData = new FormData();
-      formData.append('profileImage', blob);
-      const res = await fetch('/profile/uploadimage', {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        //  Swal.fire({
-        //       title: 'Success!',
-        //       text: 'Your profile image was updated.',
-        //       icon: 'success',
-        //       confirmButtonText: 'OK'
-        //     });
-            profileImage.src = data.imageUrl + '?t=' + new Date().getTime();
-             bsModal.hide();
-             window.location.reload()
-             uploadBtn.disabled = false;
-       
         
-      } else {
-        uploadBtn.disabled = false;
-         Swal.fire({
-            title: 'Upload Failed!',
-            text: data.message || 'Something went wrong.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-          });
-      }
-    }, 'image/jpeg');
-  });
-</script>
-  
+        Swal.fire({
+            title: 'Uploading...',
+            didOpen: () => { Swal.showLoading(); },
+            allowOutsideClick: false
+        });
+
+        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+
+        canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            formData.append('profileImage', blob, 'user-avatar.jpg');
+
+            try {
+                const response = await fetch('/profile/uploadimage', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire('Success!', 'Profile picture updated.', 'success').then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', result.message || 'Upload failed', 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Server connection failed', 'error');
+            }
+        }, 'image/jpeg', 0.9);
+    };
+};
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const avatars = document.querySelectorAll('.js-initial-avatar');
+    const colors = ['#E63946', '#1D3557', '#F4A261', '#2A9D8F', '#6A4C93', '#FFB703'];
+
+    avatars.forEach(avatar => {
+        const name = avatar.getAttribute('data-name') || "User";
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        avatar.style.backgroundColor = colors[Math.abs(hash % colors.length)];
+    });
+});
+    </script>
+</body>
+</html>

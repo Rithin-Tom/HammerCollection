@@ -117,6 +117,7 @@
       <div class="logo">🔨</div>
       <h4>Hammer Collection</h4>
     </div>
+  
     <h3>LOG IN</h3>
     <form class="mt-4" onsubmit="return login()">
       <div class="mb-3 text-start">
@@ -151,6 +152,18 @@
 </html>
 
 <script>
+
+  const errorMessage = "<%= query.error ? query.error.replace(/"/g, '&quot;') : '' %>";
+
+  if (errorMessage) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Login Failed',
+      text: errorMessage,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'OK'
+    });
+  }
 
   function login() {
     const email = document.querySelector('input[name="email"]').value;

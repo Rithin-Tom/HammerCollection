@@ -129,7 +129,11 @@
           <div class="mb-2">
             <span class="text-warning">&#9733; &#9733; &#9733; &#9733; &#9734;</span>
              <small>(<%= product.reviews?.length || 0 %> reviews)</small>
-            <span class="text ms-2"><%= product.quantity > 0 ? 'In Stock' : 'Out of Stock' %></span>
+             <% if (product.quantity <= 0) { %>
+        <span class="badge bg-danger">Out of Stock</span>
+     <% } else if (product.quantity > 0 && product.quantity <= 5) { %>
+       <span class="badge bg-warning text-dark">Limited Stock</span>
+    <% } %>
           </div>
 
           <!-- Price -->
@@ -143,18 +147,27 @@
             </h4>
 
           <!-- Description -->
+          
           <p class="fst-italic"><%= product.description %></p>
 
           <!-- Quantity Controls -->
-          <div class="d-flex align-items-center mb-3">
-            <button class="btn btn-outline-light btn-sm me-2" onclick="decreaseQty()">-</button>
-            <input type="text" id="quantityInput" class="form-control form-control-sm quantity-input me-2" value="2">
-            <button class="btn btn-outline-light btn-sm me-3" onclick="increaseQty()">+</button>
+         <div class="d-flex align-items-center mb-3">
 
-            <button class="btn btn-dark me-2" onclick="addToCart('<%=product._id %>','<%= product.salePric %>',this)">Add to Cart</button>
-            <button onclick="buyNow('<%=product._id %>')"  class="btn btn-dark me-2">Buy Now</button>
-            <button class="btn btn-outline-light"><i class="bi bi-heart"></i></button>
-          </div>
+  <% if (product.status === "sold_out" || product.status === "Out of Stock") { %>
+
+    <button class="btn btn-secondary me-2" disabled>Out of Stock</button>
+    <!-- <button class="btn btn-secondary me-2" disabled>Buy Now</button> -->
+    <button class="btn btn-outline-light" disabled><i class="bi bi-heart"></i></button>
+
+  <% } else { %>
+
+    <button class="btn btn-dark me-2" onclick="addToCart('<%=product._id %>','<%= product.salePric %>',this)">Add to Cart</button>
+    <!-- <button onclick="buyNow('<%=product._id %>')" class="btn btn-dark me-2">Buy Now</button> -->
+    <button class="btn btn-outline-light"><i class="bi bi-heart"></i></button>
+
+  <% } %>
+
+</div>
 
           <!-- Delivery Info -->
           <div class="text-white-50 small">

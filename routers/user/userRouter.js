@@ -101,10 +101,26 @@ router.get("/logout", userMiddleware.loggedIn, userController.logout);
 
 
 router.get("/auth/google",passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/auth/google/callback",passport.authenticate("google", { failureRedirect: "/signup" }),(req, res) => {
-    res.redirect("/");
-  }
-);
+// router.get("/auth/google/callback",passport.authenticate("google", { failureRedirect: "/signup" }),(req, res) => {
+//     res.redirect("/");
+//   }
+// );
 
+router.get("/auth/google/callback", (req, res, next) => {
+  passport.authenticate("google", (err, user, info) => {
+    if (err) return next(err);
+
+    if (!user) {
+      // The "info" object contains our message (like 'Your account is blocked.')
+      const errorMsg = info?.message || "Login failed. Please try again.";
+      return res.redirect(`/login?error=${encodeURIComponent(errorMsg)}`);
+    }
+
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.redirect("/");
+    });
+  })(req, res, next);
+});
 
 module.exports = router;

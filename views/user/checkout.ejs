@@ -294,7 +294,7 @@
 
 <script>
 
-  const addresses = <%- JSON.stringify(address.address)%>;
+  const addresses = <%- JSON.stringify(address?.address||[])%>;
 
 
   function displaySelectedAddress() {
@@ -357,6 +357,20 @@
   }
 
   async function placeOrder() {
+    if (!addresses || addresses.length === 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'No address found',
+      text: 'Please add a delivery address to place your order',
+      confirmButtonText: 'Add Address'
+    }).then(() => {
+      const modal = new bootstrap.Modal(
+        document.getElementById('addressModal')
+      );
+      modal.show();
+    });
+    return;
+  }
 
     const addressIndex = document.getElementById("addressSelect").value;
     const selectedAddress = addresses[addressIndex];

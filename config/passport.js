@@ -18,6 +18,9 @@ passport.use(
         let user = await User.findOne({
           $or: [{ googleId: profile.id }, { email }],
         });
+        if (user?.isBlocked) {
+            return done(null, false, { message: "Your account is blocked." });
+             }
 
         if (user) {
           // Link Google ID if it's missing

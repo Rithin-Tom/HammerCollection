@@ -16,9 +16,10 @@ const loadCheckOut = async (req, res,next) => {
       "items.productId"
     );
     let address = await Address.findOne({ user: userId });
-    if(!address){
-      res.redirect('/addAddress')
-    }
+    // if(!address){
+    //  return res.redirect('profile/addAddress ')
+    // }
+            
 
   
     res.render("user/checkout", { user, cart, address });
