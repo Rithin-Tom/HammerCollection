@@ -97,7 +97,7 @@ const cancelOrder = async (req,res) => {
 const returnProduct =async (req,res) => {
   try {
      const {orderId,reason} = req.body;
-      const order = await Orders.findByIdAndUpdate({ _id:orderId },{  orderStatus: "Returned",returnRequest: {
+      const order = await Orders.findByIdAndUpdate({ _id:orderId },{  orderStatus: "ReturnRequested",returnRequest: {
           isRequested: true,
           reason: reason,
           requestedAt: new Date(),

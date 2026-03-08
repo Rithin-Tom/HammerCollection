@@ -93,7 +93,19 @@
   <button class="btn btn-warning" data-bs-toggle="modal" id="returnOrderBtn" data-bs-target="#returnModal">
     <i class="bi bi-box-arrow-in-left"></i> Return Product
   </button>
-<% } else { %>
+<% } else if (orders.orderStatus === "ReturnRequested" ) { %>
+  <button class="btn btn-secondary" disabled>
+    <i class="bi bi-x-circle"></i> Return Requested
+  </button>
+  <% } else if (orders.orderStatus === "ReturnRejected" ) { %>
+  <button class="btn btn-secondary" disabled>
+    <i class="bi bi-x-circle"></i> Return Rejected
+  </button>
+   <% } else if (orders.orderStatus === "Returned" ) { %>
+  <button class="btn btn-secondary" disabled>
+    <i class="bi bi-x-circle"></i> Product Returned
+  </button>
+<% } else  { %>
   <button class="btn btn-danger" data-bs-toggle="modal" id="orderStatusBadge" data-bs-target="#cancelModal">
     <i class="bi bi-x-circle"></i> Cancel Order
   </button>
