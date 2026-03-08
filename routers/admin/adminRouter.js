@@ -84,6 +84,11 @@ router.get("/dashboard",adminMiddileWare.loggedIn,adminController.loadAdminDashB
 router.get('/orders',adminMiddileWare.loggedIn,orderController.loadOrders)
 router.put("/orders/update-status/:id",adminMiddileWare.loggedIn,orderController.updatedOrder)
 
+router.get('/productReturn',adminMiddileWare.loggedIn,orderController.loadProductReturn) 
+router.put("/return/approve/:id", orderController.approveReturn)
+router.put("/return/reject/:id", orderController.rejectReturn)
+router.put('/productReturn/update-status/:id',adminMiddileWare.loggedIn,orderController.updateReturnStatus) 
+
 router.get('/orderDetails/:id',adminMiddileWare.loggedIn,orderController.loadOrderDetails)
 // router.get('/users',adminController.loadUaserManage)
 

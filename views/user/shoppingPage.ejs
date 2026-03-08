@@ -260,8 +260,8 @@
                         <p id="paginationInfo" class="text-muted mb-0 small fw-medium">Loading...</p>
                         <select id="sortOrder" onchange="applyFilters(1)" class="form-select border-0 bg-white shadow-sm" style="width: auto; border-radius: 10px; font-size: 0.9rem;">
                             <option value="featured">Featured</option>
-                            <option value="lowToHigh">Price: Low to High</option>
-                            <option value="highToLow">Price: High to Low</option>
+                            <!-- <option value="lowToHigh">Price: Low to High</option>
+                            <option value="highToLow">Price: High to Low</option> -->
                         </select>
                     </div>
                 </div>
@@ -339,13 +339,12 @@
                         <div class="card-body">
                             <div class="star-rating mb-1">${stars}</div>
                             <h5 class="product-title">${p.productName}</h5>
+                
                             <div class="price-container mb-3">
                                 <span class="current-price">₹${p.salePrice.toLocaleString()}</span>
                                 ${p.regularPrice > p.salePrice ? `<span class="old-price">₹${p.regularPrice.toLocaleString()}</span>` : ''}
-                            </div>
-                            <button onclick="addToCart('${p._id}', ${p.salePrice}, this)" class="add-to-cart-btn">
-                                Add to Cart
-                            </button>
+                           </div>
+                        ${p.status === "sold_out" ? `<button class="add-to-cart-btn disabled text-danger ">Sold Out</button>` : `<button onclick="addToCart('${p._id}', ${p.salePrice}, this)" class="add-to-cart-btn"> Add to Cart</button>`}
                         </div>
                     </div>
                 </div>`;

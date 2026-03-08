@@ -2,7 +2,31 @@
 
   <div class="container my-4">
     <h2 class="mb-4">Orders Management</h2>
+    <button type="button" class="btn btn-primary mb-3" onclick="location.href='/admin/productReturn/<%=  order._id %>'"> ReturnRequest</button>
 
+<form method="GET" action="/admin/orders" class="mb-3">
+  <div class="input-group w-50">
+
+    <input
+      type="text"
+      name="search"
+      class="form-control"
+      placeholder="Search Order ID or User"
+      value="<%= search || '' %>"
+    >
+
+    <!-- Search Button -->
+    <button class="btn btn-dark" type="submit">
+      Search
+    </button>
+
+    <!-- Clear Button -->
+    <a href="/admin/orders" class="btn btn-secondary">
+      Clear
+    </a>
+
+  </div>
+</form>
     <!-- Orders Table -->
     <div class="table-responsive shadow rounded">
       <table class="table table-hover align-middle">
@@ -24,7 +48,7 @@
               <tr>
                 <td><%= index + 1 %></td>
                 <td><%= order.address.name ? order.address.name : "Guest" %></td>
-                <td>#<%= order._id %></td>
+                <td>#<%= order.orderId %></td>
                 <td>₹<%= order.totalAmount %></td>
                 <td><%= order.paymentMethod.toUpperCase() %></td>
                <td>
@@ -69,19 +93,19 @@
 
     <!-- Previous -->
     <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-      <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>">Previous</a>
+      <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>&search=<%= search || '' %>">Previous</a>
     </li>
 
     <!-- Page numbers -->
     <% for (let i = 1; i <= totalPages; i++) { %>
       <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-        <a class="page-link" href="/admin/orders?page=<%= i %>"><%= i %></a>
+        <a class="page-link" href="/admin/orders?page=<%= i %>&search=<%= search || '' %>"><%= i %></a>
       </li>
     <% } %>
 
     <!-- Next -->
     <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-      <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>">Next</a>
+      <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>&search=<%= search || '' %>">Next</a>
     </li>
   </ul>
 </nav>
