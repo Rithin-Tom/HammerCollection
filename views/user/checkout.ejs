@@ -15,6 +15,22 @@
   opacity: 1;
   transform: translateX(0);
 }
+.error-message{
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: none;
+  font-weight: 500;
+}
+
+.input-error{
+  border: 2px solid #dc3545 !important;
+  background-color: #fff5f5;
+}
+
+.input-success{
+  border: 2px solid #28a745 !important;
+}
 
 .cart-  .removing {
   opacity: 0;
@@ -479,14 +495,18 @@
       error1.style.display = "none";
       isValid= true;
     }
-    if(fullName==""){
-      error2.style.display = "block";
-      error2.innerHTML = "Please enter your Full Name ";
-      isValid =false;
-    }else{
-      error2.style.display = "none";
-      isValid= true;
-    }
+   const nameInput = document.getElementById("fullName");
+
+if(fullName==""){
+  error2.style.display = "block";
+  error2.innerHTML = "Please enter your Full Name";
+  nameInput.classList.add("input-error");
+  isValid = false;
+}else{
+  error2.style.display = "none";
+  nameInput.classList.remove("input-error");
+  nameInput.classList.add("input-success");
+}
     if(phone=="" || !/^\d{10}$/.test(phone)){
       error3.style.display = "block";
       error3.innerHTML = "Please enter a vaild phone number";
