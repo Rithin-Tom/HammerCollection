@@ -31,9 +31,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Custom JavaScript for additional functionality
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // Auto-hide notifications
             const notifications = document.querySelectorAll('.notification');
             notifications.forEach(notification => {
                 setTimeout(() => {
@@ -44,7 +43,6 @@
                 }, 5000);
             });
 
-            // Search functionality
             const searchInputs = document.querySelectorAll('input[type="text"][placeholder="Search..."]');
             searchInputs.forEach(input => {
                 input.addEventListener('keypress', function(e) {
